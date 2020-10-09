@@ -12,6 +12,14 @@ func (a *AttributeConstantValue) Name() string {
 	return "ConstantValue"
 }
 
+type AttributeExceptions struct {
+	ExceptionIndexes []uint16
+}
+
+func (a *AttributeExceptions) Name() string {
+	return "Exceptions"
+}
+
 type AttributeSynthetic struct {
 	Signature uint16
 }

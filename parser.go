@@ -425,7 +425,19 @@ func (p *Parser) readAttribute(c *ConstantPool) (Attribute, error) {
 	case "StackMapTable":
 		goto notImplemented
 	case "Exceptions":
-		goto notImplemented
+		packageCount, err := p.readUint16()
+		if err != nil {
+			return nil, err
+		}
+		a := &AttributeExceptions{}
+		var i uint16
+		for ; i < packageCount; i++ {
+			exceptionIndex, err := p.readUint16()
+			if err != nil {
+				return nil, err
+			}
+			a.ExceptionIndexes = append(a.ExceptionIndexes, exceptionIndex)
+		}
 	case "InnerClasses":
 		goto notImplemented
 	case "EnclosingMethod":
