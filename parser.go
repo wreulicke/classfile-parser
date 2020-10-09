@@ -250,7 +250,7 @@ func (p *Parser) readConstantPool(c *Classfile) error {
 				return err
 			}
 		case 17:
-			c := &ConstantInvokeDynamic{}
+			c := &ConstantDynamic{}
 			cp.Constants[i] = c
 			c.BootstrapMethodAttrIndex, err = p.readUint16()
 			if err != nil {
@@ -261,13 +261,24 @@ func (p *Parser) readConstantPool(c *Classfile) error {
 				return err
 			}
 		case 18:
+			c := &ConstantInvokeDynamic{}
+			cp.Constants[i] = c
+			c.BootstrapMethodAttrIndex, err = p.readUint16()
+			if err != nil {
+				return err
+			}
+			c.NameAndTypeIndex, err = p.readUint16()
+			if err != nil {
+				return err
+			}
+		case 19:
 			c := &ConstantModule{}
 			cp.Constants[i] = c
 			c.NameIndex, err = p.readUint16()
 			if err != nil {
 				return err
 			}
-		case 19:
+		case 20:
 			c := &ConstantPackage{}
 			cp.Constants[i] = c
 			c.NameIndex, err = p.readUint16()

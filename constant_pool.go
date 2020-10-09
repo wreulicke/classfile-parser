@@ -82,6 +82,11 @@ type ConstantMethodType struct {
 	DescriptorIndex uint16
 }
 
+type ConstantDynamic struct {
+	BootstrapMethodAttrIndex uint16
+	NameAndTypeIndex         uint16
+}
+
 type ConstantInvokeDynamic struct {
 	BootstrapMethodAttrIndex uint16
 	NameAndTypeIndex         uint16
