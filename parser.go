@@ -31,9 +31,9 @@ type Classfile struct {
 	ThisClass    uint16
 	SuperClass   uint16
 	Interfaces   []uint16
-	// Fields []Field
-	// Methods []Method
-	// Attribute []Attribute
+	Fields       []*Field
+	Methods      []*Method
+	// Attribute    []Attribute
 }
 
 func (p *Parser) Parse() (*Classfile, error) {
@@ -72,7 +72,7 @@ func (p *Parser) Parse() (*Classfile, error) {
 	if err := p.readAttributes(c); err != nil {
 		return nil, err
 	}
-	return nil, nil
+	return c, nil
 }
 
 func (p *Parser) readCaffbabe() error {
@@ -302,9 +302,9 @@ func (p *Parser) readFields(c *Classfile) error {
 		return err
 	}
 	var i uint16
-	fmt.Println("field count", count)
 	for ; i < count; i++ {
 		f := &Field{}
+		c.Fields = append(c.Fields, f)
 		f.AccessFlags, err = p.readUint16()
 		if err != nil {
 			return err
@@ -354,19 +354,19 @@ func (p *Parser) readMethods(c *Classfile) error {
 	if err != nil {
 		return err
 	}
-	fmt.Println("method count", count)
 	var i uint16
 	for ; i < count; i++ {
-		f := &Method{}
-		f.AccessFlags, err = p.readUint16()
+		m := &Method{}
+		c.Methods = append(c.Methods, m)
+		m.AccessFlags, err = p.readUint16()
 		if err != nil {
 			return err
 		}
-		f.NameIndex, err = p.readUint16()
+		m.NameIndex, err = p.readUint16()
 		if err != nil {
 			return err
 		}
-		f.DescriptorIndex, err = p.readUint16()
+		m.DescriptorIndex, err = p.readUint16()
 		if err != nil {
 			return err
 		}
