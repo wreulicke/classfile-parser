@@ -425,13 +425,13 @@ func (p *Parser) readAttribute(c *ConstantPool) (Attribute, error) {
 	case "StackMapTable":
 		goto notImplemented
 	case "Exceptions":
-		packageCount, err := p.readUint16()
+		exceptionCount, err := p.readUint16()
 		if err != nil {
 			return nil, err
 		}
-		a := &AttributeExceptions{}
+		a := &AttributeExceptions{ExceptionIndexes: make([]uint16, exceptionCount)}
 		var i uint16
-		for ; i < packageCount; i++ {
+		for ; i < exceptionCount; i++ {
 			exceptionIndex, err := p.readUint16()
 			if err != nil {
 				return nil, err
@@ -505,7 +505,7 @@ func (p *Parser) readAttribute(c *ConstantPool) (Attribute, error) {
 		if err != nil {
 			return nil, err
 		}
-		a := &AttributeModulePackage{}
+		a := &AttributeModulePackage{PackageIndexes: make([]uint16, packageCount)}
 		var i uint16
 		for ; i < packageCount; i++ {
 			packageIndex, err := p.readUint16()
@@ -528,7 +528,7 @@ func (p *Parser) readAttribute(c *ConstantPool) (Attribute, error) {
 		if err != nil {
 			return nil, err
 		}
-		a := &AttributeNestMembers{}
+		a := &AttributeNestMembers{Classes: make([]uint16, numberOfClasses)}
 		var i uint16
 		for ; i < numberOfClasses; i++ {
 			class, err := p.readUint16()
