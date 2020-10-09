@@ -1,6 +1,10 @@
 package main
 
-type ConstantPool interface {
+type ConstantPool struct {
+	Constants []Constant
+}
+
+type Constant interface {
 }
 
 type ConstantClass struct {

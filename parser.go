@@ -26,7 +26,7 @@ func New(input io.Reader) *Parser {
 type Classfile struct {
 	MajorVersion uint16
 	MinorVersion uint16
-	ConstantPool []ConstantPool
+	ConstantPool ConstantPool
 	AccessFlags  uint16
 	ThisClass    uint16
 	SuperClass   uint16
@@ -115,7 +115,7 @@ func (p *Parser) readConstantPool(c *Classfile) error {
 		return err
 	}
 	var i uint16
-	cp := make([]ConstantPool, count-1)
+	cp := ConstantPool{Constants: make([]Constant, count-1)}
 	c.ConstantPool = cp
 	for ; i < count-1; i++ {
 		tag, err := p.readUint8()
@@ -125,14 +125,14 @@ func (p *Parser) readConstantPool(c *Classfile) error {
 		switch tag {
 		case 7:
 			c := &ConstantClass{}
-			cp[i] = c
+			cp.Constants[i] = c
 			c.NameIndex, err = p.readUint16()
 			if err != nil {
 				return err
 			}
 		case 9:
 			c := &ConstantFieldref{}
-			cp[i] = c
+			cp.Constants[i] = c
 			c.ClassIndex, err = p.readUint16()
 			if err != nil {
 				return err
@@ -143,7 +143,7 @@ func (p *Parser) readConstantPool(c *Classfile) error {
 			}
 		case 10:
 			c := &ConstantMethodref{}
-			cp[i] = c
+			cp.Constants[i] = c
 			c.ClassIndex, err = p.readUint16()
 			if err != nil {
 				return err
@@ -154,7 +154,7 @@ func (p *Parser) readConstantPool(c *Classfile) error {
 			}
 		case 11:
 			c := &ConstantInterfaceMethodref{}
-			cp[i] = c
+			cp.Constants[i] = c
 			c.ClassIndex, err = p.readUint16()
 			if err != nil {
 				return err
@@ -165,28 +165,29 @@ func (p *Parser) readConstantPool(c *Classfile) error {
 			}
 		case 8:
 			c := &ConstantString{}
-			cp[i] = c
+			cp.Constants[i] = c
 			c.StringIndex, err = p.readUint16()
 			if err != nil {
 				return err
 			}
 		case 3:
 			c := &ConstantInteger{}
-			cp[i] = c
+			cp.Constants[i] = c
 			c.Bytes, err = p.readUint32()
 			if err != nil {
 				return err
 			}
 		case 4:
 			c := &ConstantFloat{}
-			cp[i] = c
+			cp.Constants[i] = c
 			c.Bytes, err = p.readUint32()
 			if err != nil {
 				return err
 			}
 		case 5:
 			c := &ConstantLong{}
-			cp[i] = c
+			cp.Constants[i] = c
+			i++
 			c.HighBytes, err = p.readUint32()
 			if err != nil {
 				return err
@@ -196,8 +197,9 @@ func (p *Parser) readConstantPool(c *Classfile) error {
 				return err
 			}
 		case 6:
-			c := &ConstantLong{}
-			cp[i] = c
+			c := &ConstantDouble{}
+			cp.Constants[i] = c
+			i++
 			c.HighBytes, err = p.readUint32()
 			if err != nil {
 				return err
@@ -208,7 +210,7 @@ func (p *Parser) readConstantPool(c *Classfile) error {
 			}
 		case 12:
 			c := &ConstantNameAndType{}
-			cp[i] = c
+			cp.Constants[i] = c
 			c.NameIndex, err = p.readUint16()
 			if err != nil {
 				return err
@@ -219,7 +221,7 @@ func (p *Parser) readConstantPool(c *Classfile) error {
 			}
 		case 1:
 			c := &ConstantUtf8{}
-			cp[i] = c
+			cp.Constants[i] = c
 			count, err := p.readUint16()
 			if err != nil {
 				return err
@@ -231,7 +233,7 @@ func (p *Parser) readConstantPool(c *Classfile) error {
 			}
 		case 15:
 			c := &ConstantMethodHandle{}
-			cp[i] = c
+			cp.Constants[i] = c
 			c.ReferenceKind, err = p.readUint8()
 			if err != nil {
 				return err
@@ -242,14 +244,14 @@ func (p *Parser) readConstantPool(c *Classfile) error {
 			}
 		case 16:
 			c := &ConstantMethodType{}
-			cp[i] = c
+			cp.Constants[i] = c
 			c.DescriptorIndex, err = p.readUint16()
 			if err != nil {
 				return err
 			}
 		case 17:
 			c := &ConstantInvokeDynamic{}
-			cp[i] = c
+			cp.Constants[i] = c
 			c.BootstrapMethodAttrIndex, err = p.readUint16()
 			if err != nil {
 				return err
