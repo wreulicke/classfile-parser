@@ -86,3 +86,11 @@ type ConstantInvokeDynamic struct {
 	BootstrapMethodAttrIndex uint16
 	NameAndTypeIndex         uint16
 }
+
+type ConstantModule struct {
+	NameIndex uint16
+}
+
+type ConstantPackage struct {
+	NameIndex uint16
+}

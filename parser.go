@@ -260,7 +260,22 @@ func (p *Parser) readConstantPool(c *Classfile) error {
 			if err != nil {
 				return err
 			}
+		case 18:
+			c := &ConstantModule{}
+			cp.Constants[i] = c
+			c.NameIndex, err = p.readUint16()
+			if err != nil {
+				return err
+			}
+		case 19:
+			c := &ConstantPackage{}
+			cp.Constants[i] = c
+			c.NameIndex, err = p.readUint16()
+			if err != nil {
+				return err
+			}
 		}
+
 	}
 	return nil
 }
