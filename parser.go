@@ -464,7 +464,10 @@ func (p *Parser) readAttribute(c *ConstantPool) (Attribute, error) {
 	case "LocalVariableTypeTable":
 		goto notImplemented
 	case "Deprecated":
-		goto notImplemented
+		if attributeLength != 0 {
+			return nil, errors.New("Deprecated attribute length should be 2")
+		}
+		return &AttributeDeprecated{}, nil
 	case "RuntimeVisibleAnnotations":
 		goto notImplemented
 	case "RuntimeInvisibleAnnotations":
