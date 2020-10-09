@@ -496,7 +496,25 @@ func (p *Parser) readAttribute(constantPool *ConstantPool) (Attribute, error) {
 		a.DebugExtension, err = p.readBytes(int(attributeLength))
 		return a, err
 	case "LineNumberTable":
-		goto notImplemented
+		lineNumberTableLength, err := p.readUint16()
+		if err != nil {
+			return nil, err
+		}
+		a := &AttributeLineNumberTable{LineNumberTable: make([]*LineNumber, lineNumberTableLength)}
+		var i uint16
+		for ; i < lineNumberTableLength; i++ {
+			ln := &LineNumber{}
+			ln.StartPc, err = p.readUint16()
+			if err != nil {
+				return nil, err
+			}
+			ln.LineNumber, err = p.readUint16()
+			if err != nil {
+				return nil, err
+			}
+			a.LineNumberTable = append(a.LineNumberTable, ln)
+		}
+		return a, nil
 	case "LocalVariableTable":
 		goto notImplemented
 	case "LocalVariableTypeTable":

@@ -76,6 +76,19 @@ func (a *AttributeSourceDebugExtension) Name() string {
 	return "SourceDebugExtension"
 }
 
+type AttributeLineNumberTable struct {
+	LineNumberTable []*LineNumber
+}
+
+func (a *AttributeLineNumberTable) Name() string {
+	return "LineNumberTable"
+}
+
+type LineNumber struct {
+	StartPc    uint16
+	LineNumber uint16
+}
+
 type AttributeDeprecated struct{}
 
 func (a *AttributeDeprecated) Name() string {
