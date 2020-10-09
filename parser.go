@@ -460,6 +460,9 @@ func (p *Parser) readAttribute(constantPool *ConstantPool) (Attribute, error) {
 				return nil, err
 			}
 			c.InnerClassAccessFlags, err = p.readUint16()
+			if err != nil {
+				return nil, err
+			}
 			a.InnerClasses = append(a.InnerClasses, c)
 		}
 		return a, nil
