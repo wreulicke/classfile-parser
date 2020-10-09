@@ -26,14 +26,14 @@ func New(input io.Reader) *Parser {
 type Classfile struct {
 	MajorVersion uint16
 	MinorVersion uint16
-	ConstantPool ConstantPool
+	ConstantPool *ConstantPool
 	AccessFlags  uint16
 	ThisClass    uint16
 	SuperClass   uint16
 	Interfaces   []uint16
 	Fields       []*Field
 	Methods      []*Method
-	// Attribute    []Attribute
+	Attribute    []Attribute
 }
 
 func (p *Parser) Parse() (*Classfile, error) {
@@ -69,7 +69,7 @@ func (p *Parser) Parse() (*Classfile, error) {
 	if err := p.readMethods(c); err != nil {
 		return nil, err
 	}
-	if err := p.readAttributes(c); err != nil {
+	if c.Attribute, err = p.readAttributes(c.ConstantPool); err != nil {
 		return nil, err
 	}
 	return c, nil
@@ -115,7 +115,7 @@ func (p *Parser) readConstantPool(c *Classfile) error {
 		return err
 	}
 	var i uint16
-	cp := ConstantPool{Constants: make([]Constant, count-1)}
+	cp := &ConstantPool{Constants: make([]Constant, count-1)}
 	c.ConstantPool = cp
 	for ; i < count-1; i++ {
 		tag, err := p.readUint8()
@@ -317,36 +317,12 @@ func (p *Parser) readFields(c *Classfile) error {
 		if err != nil {
 			return err
 		}
-		attributeCount, err := p.readUint16()
+		f.Attributes, err = p.readAttributes(c.ConstantPool)
 		if err != nil {
 			return err
 		}
-		var j uint16
-		for ; j < attributeCount; j++ {
-			// TODO implement
-			_, err = p.readAttribute()
-			if err != nil {
-				return err
-			}
-		}
 	}
 	return nil
-}
-
-func (p *Parser) readAttribute() (Attribute, error) {
-	_, err := p.readUint16()
-	if err != nil {
-		return nil, err
-	}
-	attributeLength, err := p.readUint32()
-	if err != nil {
-		return nil, err
-	}
-	_, err = p.readBytes(int(attributeLength)) // TODO support more attributes
-	if err != nil {
-		return nil, err
-	}
-	return nil, nil
 }
 
 func (p *Parser) readMethods(c *Classfile) error {
@@ -370,36 +346,49 @@ func (p *Parser) readMethods(c *Classfile) error {
 		if err != nil {
 			return err
 		}
-		attributeCount, err := p.readUint16()
+		m.Attributes, err = p.readAttributes(c.ConstantPool)
 		if err != nil {
 			return err
-		}
-		var j uint16
-		for ; j < attributeCount; j++ {
-			// TODO implement
-			_, err = p.readAttribute()
-			if err != nil {
-				return err
-			}
 		}
 	}
 	return nil
 }
 
-func (p *Parser) readAttributes(c *Classfile) error {
+func (p *Parser) readAttributes(c *ConstantPool) ([]Attribute, error) {
 	count, err := p.readUint16()
 	if err != nil {
-		return err
+		return nil, err
 	}
+	as := make([]Attribute, count)
 	var i uint16
 	for ; i < count; i++ {
-		// TODO implement
-		_, err = p.readAttribute()
+		a, err := p.readAttribute(c)
 		if err != nil {
-			return err
+			return nil, err
 		}
+		as = append(as, a)
 	}
-	return nil
+	return as, nil
+}
+
+func (p *Parser) readAttribute(c *ConstantPool) (Attribute, error) {
+	attributeNameIndex, err := p.readUint16()
+	if err != nil {
+		return nil, err
+	}
+	attributeLength, err := p.readUint32()
+	if err != nil {
+		return nil, err
+	}
+	u := c.LookupUtf8(attributeNameIndex)
+	if u == nil {
+		return nil, fmt.Errorf("attribute name index is invalid: index:%d", attributeNameIndex)
+	}
+	_, err = p.readBytes(int(attributeLength)) // TODO support more attributes
+	if err != nil {
+		return nil, err
+	}
+	return nil, nil
 }
 
 func (p *Parser) readBytes(size int) ([]byte, error) {

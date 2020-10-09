@@ -4,6 +4,17 @@ type ConstantPool struct {
 	Constants []Constant
 }
 
+func (c *ConstantPool) LookupUtf8(index uint16) *ConstantUtf8 {
+	if index >= uint16(len(c.Constants)) {
+		return nil
+	}
+	found := c.Constants[index]
+	if utf8, ok := found.(*ConstantUtf8); ok {
+		return utf8
+	}
+	return nil
+}
+
 type Constant interface {
 }
 
