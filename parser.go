@@ -429,7 +429,7 @@ func (p *Parser) readAttribute(constantPool *ConstantPool) (Attribute, error) {
 		if err != nil {
 			return nil, err
 		}
-		a := &AttributeExceptions{ExceptionIndexes: make([]uint16, exceptionCount)}
+		a := &AttributeExceptions{ExceptionIndexes: make([]uint16, 0, exceptionCount)}
 		var i uint16
 		for ; i < exceptionCount; i++ {
 			exceptionIndex, err := p.readUint16()
@@ -443,7 +443,7 @@ func (p *Parser) readAttribute(constantPool *ConstantPool) (Attribute, error) {
 		if err != nil {
 			return nil, err
 		}
-		a := &AttributeInnerClasses{InnerClasses: make([]*InnerClass, numberOfClasses)}
+		a := &AttributeInnerClasses{InnerClasses: make([]*InnerClass, 0, numberOfClasses)}
 		var i uint16
 		for ; i < numberOfClasses; i++ {
 			c := &InnerClass{}
@@ -500,7 +500,7 @@ func (p *Parser) readAttribute(constantPool *ConstantPool) (Attribute, error) {
 		if err != nil {
 			return nil, err
 		}
-		a := &AttributeLineNumberTable{LineNumberTable: make([]*LineNumber, lineNumberTableLength)}
+		a := &AttributeLineNumberTable{LineNumberTable: make([]*LineNumber, 0, lineNumberTableLength)}
 		var i uint16
 		for ; i < lineNumberTableLength; i++ {
 			ln := &LineNumber{}
@@ -513,6 +513,12 @@ func (p *Parser) readAttribute(constantPool *ConstantPool) (Attribute, error) {
 				return nil, err
 			}
 			a.LineNumberTable = append(a.LineNumberTable, ln)
+		}
+		if attributeLength > 4*uint32(lineNumberTableLength)+2 {
+			_, err := p.readBytes(int(attributeLength - 4*uint32(lineNumberTableLength) - 2))
+			if err != nil {
+				return nil, err
+			}
 		}
 		return a, nil
 	case "LocalVariableTable":
@@ -549,7 +555,7 @@ func (p *Parser) readAttribute(constantPool *ConstantPool) (Attribute, error) {
 		if err != nil {
 			return nil, err
 		}
-		a := &AttributeModulePackage{PackageIndexes: make([]uint16, packageCount)}
+		a := &AttributeModulePackage{PackageIndexes: make([]uint16, 0, packageCount)}
 		var i uint16
 		for ; i < packageCount; i++ {
 			packageIndex, err := p.readUint16()
@@ -572,7 +578,7 @@ func (p *Parser) readAttribute(constantPool *ConstantPool) (Attribute, error) {
 		if err != nil {
 			return nil, err
 		}
-		a := &AttributeNestMembers{Classes: make([]uint16, numberOfClasses)}
+		a := &AttributeNestMembers{Classes: make([]uint16, 0, numberOfClasses)}
 		var i uint16
 		for ; i < numberOfClasses; i++ {
 			class, err := p.readUint16()
