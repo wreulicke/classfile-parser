@@ -430,10 +430,13 @@ func (p *Parser) readAttribute(c *ConstantPool) (Attribute, error) {
 		goto notImplemented
 	case "EnclosingMethod":
 		goto notImplemented
-	case "Syntetic":
-		goto notImplemented
+	case "Synthetic":
+		a := &AttributeSynthetic{}
+		return a, nil
 	case "Signature":
-		goto notImplemented
+		a := &AttributeSignature{}
+		a.Signature, err = p.readUint16()
+		return a, err
 	case "SourceFile":
 		if attributeLength != 2 {
 			return nil, errors.New("SourceFile attribute length should be 2")

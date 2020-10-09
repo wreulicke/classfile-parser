@@ -5,7 +5,6 @@ type Attribute interface {
 }
 
 type AttributeConstantValue struct {
-	c                  *ConstantPool
 	ConstantValueIndex uint16
 }
 
@@ -13,8 +12,23 @@ func (a *AttributeConstantValue) Name() string {
 	return "ConstantValue"
 }
 
+type AttributeSynthetic struct {
+	Signature uint16
+}
+
+func (a *AttributeSynthetic) Name() string {
+	return "Synthetic"
+}
+
+type AttributeSignature struct {
+	Signature uint16
+}
+
+func (a *AttributeSignature) Name() string {
+	return "Signature"
+}
+
 type AttributeSourceFile struct {
-	c               *ConstantPool
 	SourcefileIndex uint16
 }
 
@@ -23,7 +37,6 @@ func (a *AttributeSourceFile) Name() string {
 }
 
 type AttributeSourceDebugExtension struct {
-	c              *ConstantPool
 	DebugExtension []byte
 }
 
@@ -43,4 +56,28 @@ type AttributeModulePackage struct {
 
 func (a *AttributeModulePackage) Name() string {
 	return "Module"
+}
+
+type AttributeModuleMainClass struct {
+	MainClassIndex uint16
+}
+
+func (a *AttributeModuleMainClass) Name() string {
+	return "ModuleMainClass"
+}
+
+type AttributeNestHost struct {
+	HostClassIndex uint16
+}
+
+func (a *AttributeNestHost) Name() string {
+	return "NestHost"
+}
+
+type AttributeNestMembers struct {
+	Classes []uint16
+}
+
+func (a *AttributeNestMembers) Name() string {
+	return "NestHost"
 }
