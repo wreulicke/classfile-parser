@@ -285,6 +285,8 @@ func (p *Parser) readConstantPool(c *Classfile) error {
 			if err != nil {
 				return err
 			}
+		default:
+			return fmt.Errorf("Unsupported tags for constant pool. tag:%d", tag)
 		}
 
 	}
