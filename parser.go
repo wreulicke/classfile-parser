@@ -399,7 +399,7 @@ func (p *Parser) readAttributes(c *ConstantPool) ([]Attribute, error) {
 	return as, nil
 }
 
-func (p *Parser) readAttribute(c *ConstantPool) (Attribute, error) {
+func (p *Parser) readAttribute(constantPool *ConstantPool) (Attribute, error) {
 	attributeNameIndex, err := p.readUint16()
 	if err != nil {
 		return nil, err
@@ -408,7 +408,7 @@ func (p *Parser) readAttribute(c *ConstantPool) (Attribute, error) {
 	if err != nil {
 		return nil, err
 	}
-	u := c.LookupUtf8(attributeNameIndex)
+	u := constantPool.LookupUtf8(attributeNameIndex)
 	if u == nil {
 		return nil, fmt.Errorf("attribute name index is invalid: index:%d", attributeNameIndex)
 	}
@@ -439,7 +439,30 @@ func (p *Parser) readAttribute(c *ConstantPool) (Attribute, error) {
 			a.ExceptionIndexes = append(a.ExceptionIndexes, exceptionIndex)
 		}
 	case "InnerClasses":
-		goto notImplemented
+		numberOfClasses, err := p.readUint16()
+		if err != nil {
+			return nil, err
+		}
+		a := &AttributeInnerClasses{InnerClasses: make([]*InnerClass, numberOfClasses)}
+		var i uint16
+		for ; i < numberOfClasses; i++ {
+			c := &InnerClass{}
+			c.InnerClassInfoIndex, err = p.readUint16()
+			if err != nil {
+				return nil, err
+			}
+			c.OuterClassInfoIndex, err = p.readUint16()
+			if err != nil {
+				return nil, err
+			}
+			c.InnerNameIndex, err = p.readUint16()
+			if err != nil {
+				return nil, err
+			}
+			c.InnerClassAccessFlags, err = p.readUint16()
+			a.InnerClasses = append(a.InnerClasses, c)
+		}
+		return a, nil
 	case "EnclosingMethod":
 		a := &AttributeEnclosingMethod{}
 		a.ClassIndex, err = p.readUint16()

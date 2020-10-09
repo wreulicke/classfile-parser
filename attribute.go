@@ -20,6 +20,21 @@ func (a *AttributeExceptions) Name() string {
 	return "Exceptions"
 }
 
+type AttributeInnerClasses struct {
+	InnerClasses []*InnerClass
+}
+
+func (a *AttributeInnerClasses) Name() string {
+	return "InnerClasses"
+}
+
+type InnerClass struct {
+	InnerClassInfoIndex   uint16
+	OuterClassInfoIndex   uint16
+	InnerNameIndex        uint16
+	InnerClassAccessFlags uint16
+}
+
 type AttributeEnclosingMethod struct {
 	ClassIndex  uint16
 	MethodIndex uint16
