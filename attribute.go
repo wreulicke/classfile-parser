@@ -36,3 +36,11 @@ type AttributeDeprecated struct{}
 func (a *AttributeDeprecated) Name() string {
 	return "Deprecated"
 }
+
+type AttributeModulePackage struct {
+	PackageIndexes []uint16
+}
+
+func (a *AttributeModulePackage) Name() string {
+	return "Module"
+}

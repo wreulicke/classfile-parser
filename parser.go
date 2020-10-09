@@ -489,7 +489,20 @@ func (p *Parser) readAttribute(c *ConstantPool) (Attribute, error) {
 	case "Module":
 		goto notImplemented
 	case "ModulePackage":
-		goto notImplemented
+		packageCount, err := p.readUint16()
+		if err != nil {
+			return nil, err
+		}
+		a := &AttributeModulePackage{}
+		var i uint16
+		for ; i < packageCount; i++ {
+			packageIndex, err := p.readUint16()
+			if err != nil {
+				return nil, err
+			}
+			a.PackageIndexes = append(a.PackageIndexes, packageIndex)
+		}
+		return a, nil
 	case "ModuleMainClass":
 		goto notImplemented
 	case "NestHost":
