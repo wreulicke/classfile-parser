@@ -412,6 +412,89 @@ func (p *Parser) readAttribute(c *ConstantPool) (Attribute, error) {
 	if u == nil {
 		return nil, fmt.Errorf("attribute name index is invalid: index:%d", attributeNameIndex)
 	}
+	switch u.String() {
+	case "ConstantValue":
+		if attributeLength != 2 {
+			return nil, errors.New("ContantValue attribute length should be 2")
+		}
+		a := &AttributeConstantValue{}
+		a.ConstantValueIndex, err = p.readUint16()
+		if err != nil {
+			return nil, err
+		}
+		return a, nil
+	case "Code":
+		goto notImplemented
+	case "StackMapTable":
+		goto notImplemented
+	case "Exceptions":
+		goto notImplemented
+	case "InnerClasses":
+		goto notImplemented
+	case "EnclosingMethod":
+		goto notImplemented
+	case "Syntetic":
+		goto notImplemented
+	case "Signature":
+		goto notImplemented
+	case "SourceFile":
+		if attributeLength != 2 {
+			return nil, errors.New("SourceFile attribute length should be 2")
+		}
+		a := &AttributeSourceFile{}
+		a.SourcefileIndex, err = p.readUint16()
+		if err != nil {
+			return nil, err
+		}
+		return a, nil
+	case "SourceDebugExtension":
+		if attributeLength != 2 {
+			return nil, errors.New("SourceFile attribute length should be 2")
+		}
+		a := &AttributeSourceDebugExtension{}
+		a.DebugExtension, err = p.readBytes(int(attributeLength))
+		if err != nil {
+			return nil, err
+		}
+		return a, nil
+	case "LineNumberTable":
+		goto notImplemented
+	case "LocalVariableTable":
+		goto notImplemented
+	case "LocalVariableTypeTable":
+		goto notImplemented
+	case "Deprecated":
+		goto notImplemented
+	case "RuntimeVisibleAnnotations":
+		goto notImplemented
+	case "RuntimeInvisibleAnnotations":
+		goto notImplemented
+	case "RuntimeVisibleParameterAnnotations":
+		goto notImplemented
+	case "RuntimeInvisibleParameterAnnotations":
+		goto notImplemented
+	case "RuntimeVisibleTypeAnnotations":
+		goto notImplemented
+	case "RuntimeInvisibleTypeAnnotations":
+		goto notImplemented
+	case "AnnotationDefault":
+		goto notImplemented
+	case "BoostrapMethods":
+		goto notImplemented
+	case "MethodParameters":
+		goto notImplemented
+	case "Module":
+		goto notImplemented
+	case "ModulePackage":
+		goto notImplemented
+	case "ModuleMainClass":
+		goto notImplemented
+	case "NestHost":
+		goto notImplemented
+	case "NestMembers":
+		goto notImplemented
+	}
+notImplemented:
 	_, err = p.readBytes(int(attributeLength)) // TODO support more attributes
 	if err != nil {
 		return nil, err
