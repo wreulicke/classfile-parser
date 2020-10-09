@@ -419,10 +419,7 @@ func (p *Parser) readAttribute(c *ConstantPool) (Attribute, error) {
 		}
 		a := &AttributeConstantValue{}
 		a.ConstantValueIndex, err = p.readUint16()
-		if err != nil {
-			return nil, err
-		}
-		return a, nil
+		return a, err
 	case "Code":
 		goto notImplemented
 	case "StackMapTable":
@@ -443,20 +440,14 @@ func (p *Parser) readAttribute(c *ConstantPool) (Attribute, error) {
 		}
 		a := &AttributeSourceFile{}
 		a.SourcefileIndex, err = p.readUint16()
-		if err != nil {
-			return nil, err
-		}
-		return a, nil
+		return a, err
 	case "SourceDebugExtension":
 		if attributeLength != 2 {
 			return nil, errors.New("SourceFile attribute length should be 2")
 		}
 		a := &AttributeSourceDebugExtension{}
 		a.DebugExtension, err = p.readBytes(int(attributeLength))
-		if err != nil {
-			return nil, err
-		}
-		return a, nil
+		return a, err
 	case "LineNumberTable":
 		goto notImplemented
 	case "LocalVariableTable":
@@ -504,11 +495,28 @@ func (p *Parser) readAttribute(c *ConstantPool) (Attribute, error) {
 		}
 		return a, nil
 	case "ModuleMainClass":
-		goto notImplemented
+		a := &AttributeModuleMainClass{}
+		a.MainClassIndex, err = p.readUint16()
+		return a, err
 	case "NestHost":
-		goto notImplemented
+		a := &AttributeNestHost{}
+		a.HostClassIndex, err = p.readUint16()
+		return a, err
 	case "NestMembers":
-		goto notImplemented
+		numberOfClasses, err := p.readUint16()
+		if err != nil {
+			return nil, err
+		}
+		a := &AttributeNestMembers{}
+		var i uint16
+		for ; i < numberOfClasses; i++ {
+			class, err := p.readUint16()
+			if err != nil {
+				return nil, err
+			}
+			a.Classes = append(a.Classes, class)
+		}
+		return a, nil
 	}
 notImplemented:
 	_, err = p.readBytes(int(attributeLength)) // TODO support more attributes
