@@ -20,6 +20,15 @@ func (a *AttributeExceptions) Name() string {
 	return "Exceptions"
 }
 
+type AttributeEnclosingMethod struct {
+	ClassIndex  uint16
+	MethodIndex uint16
+}
+
+func (a *AttributeEnclosingMethod) Name() string {
+	return "EnclosingMethod"
+}
+
 type AttributeSynthetic struct {
 	Signature uint16
 }

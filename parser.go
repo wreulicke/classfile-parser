@@ -441,7 +441,13 @@ func (p *Parser) readAttribute(c *ConstantPool) (Attribute, error) {
 	case "InnerClasses":
 		goto notImplemented
 	case "EnclosingMethod":
-		goto notImplemented
+		a := &AttributeEnclosingMethod{}
+		a.ClassIndex, err = p.readUint16()
+		if err != nil {
+			return nil, err
+		}
+		a.MethodIndex, err = p.readUint16()
+		return a, err
 	case "Synthetic":
 		a := &AttributeSynthetic{}
 		return a, nil
