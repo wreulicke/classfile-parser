@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"os"
 	"testing"
 )
@@ -11,8 +12,12 @@ func TestParse(t *testing.T) {
 		t.Fatal(err)
 	}
 	p := New(f)
-	_, err = p.Parse()
+	c, err := p.Parse()
 	if err != nil {
 		t.Error(err)
 	}
+	e := json.NewEncoder(os.Stdout)
+	e.SetIndent("", "  ")
+	e.Encode(c)
+	t.Error("test")
 }
