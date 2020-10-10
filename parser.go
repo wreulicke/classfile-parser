@@ -590,7 +590,20 @@ func readAttribute(p *BinaryParser, attributeLength uint32, attributeName string
 		}
 		return a, nil
 	case "RuntimeInvisibleAnnotations":
-		goto notImplemented
+		numAnnotations, err := p.readUint16()
+		if err != nil {
+			return nil, err
+		}
+		a := &AttributeRuntimeInvisibleAnnotations{}
+		var i uint16
+		for ; i < numAnnotations; i++ {
+			annot, err := readAnnotation(p)
+			if err != nil {
+				return nil, err
+			}
+			a.Annotations = append(a.Annotations, annot)
+		}
+		return a, nil
 	case "RuntimeVisibleParameterAnnotations":
 		goto notImplemented
 	case "RuntimeInvisibleParameterAnnotations":

@@ -135,6 +135,14 @@ func (a *AttributeRuntimeVisibleAnnotations) Name() string {
 	return "RuntimeVisibleAnnotations"
 }
 
+type AttributeRuntimeInvisibleAnnotations struct {
+	Annotations []*Annotation
+}
+
+func (a *AttributeRuntimeInvisibleAnnotations) Name() string {
+	return "RuntimeInvisibleAnnotations"
+}
+
 type Annotation struct {
 	TypeIndex         uint16
 	ElementValuePairs []*ElementValuePair
