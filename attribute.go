@@ -128,8 +128,7 @@ func (a *AttributeDeprecated) Name() string {
 }
 
 type AttributeRuntimeVisibleAnnotations struct {
-	AttributeNameIndex uint16
-	Annotations        []*Annotation
+	Annotations []*Annotation
 }
 
 func (a *AttributeRuntimeVisibleAnnotations) Name() string {
