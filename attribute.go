@@ -143,6 +143,26 @@ func (a *AttributeRuntimeInvisibleAnnotations) Name() string {
 	return "RuntimeInvisibleAnnotations"
 }
 
+type AttributeRuntimeVisibleParameterAnnotations struct {
+	ParameterAnnotations []*ParameterAnnotation
+}
+
+func (a *AttributeRuntimeVisibleParameterAnnotations) Name() string {
+	return "RuntimeVisibleParameterAnnotations"
+}
+
+type AttributeRuntimeInvisibleParameterAnnotations struct {
+	ParameterAnnotations []*ParameterAnnotation
+}
+
+func (a *AttributeRuntimeInvisibleParameterAnnotations) Name() string {
+	return "RuntimeInvisibleParameterAnnotations"
+}
+
+type ParameterAnnotation struct {
+	Annotations []*Annotation
+}
+
 type Annotation struct {
 	TypeIndex         uint16
 	ElementValuePairs []*ElementValuePair

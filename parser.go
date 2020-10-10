@@ -605,9 +605,35 @@ func readAttribute(p *BinaryParser, attributeLength uint32, attributeName string
 		}
 		return a, nil
 	case "RuntimeVisibleParameterAnnotations":
-		goto notImplemented
+		numAnnotations, err := p.readUint16()
+		if err != nil {
+			return nil, err
+		}
+		a := &AttributeRuntimeVisibleParameterAnnotations{}
+		var i uint16
+		for ; i < numAnnotations; i++ {
+			annot, err := readParameterAnnotation(p)
+			if err != nil {
+				return nil, err
+			}
+			a.ParameterAnnotations = append(a.ParameterAnnotations, annot)
+		}
+		return a, nil
 	case "RuntimeInvisibleParameterAnnotations":
-		goto notImplemented
+		numAnnotations, err := p.readUint16()
+		if err != nil {
+			return nil, err
+		}
+		a := &AttributeRuntimeVisibleParameterAnnotations{}
+		var i uint16
+		for ; i < numAnnotations; i++ {
+			annot, err := readParameterAnnotation(p)
+			if err != nil {
+				return nil, err
+			}
+			a.ParameterAnnotations = append(a.ParameterAnnotations, annot)
+		}
+		return a, nil
 	case "RuntimeVisibleTypeAnnotations":
 		goto notImplemented
 	case "RuntimeInvisibleTypeAnnotations":
@@ -684,6 +710,23 @@ func readAnnotation(parser *BinaryParser) (*Annotation, error) {
 		a.ElementValuePairs = append(a.ElementValuePairs, p)
 	}
 	return nil, err
+}
+
+func readParameterAnnotation(parser *BinaryParser) (*ParameterAnnotation, error) {
+	a := &ParameterAnnotation{}
+	numAnnotations, err := parser.readUint16()
+	if err != nil {
+		return nil, err
+	}
+	var i uint16
+	for ; i < numAnnotations; i++ {
+		annot, err := readAnnotation(parser)
+		if err != nil {
+			return nil, err
+		}
+		a.Annotations = append(a.Annotations, annot)
+	}
+	return a, nil
 }
 
 func readElementValue(parser *BinaryParser) (*ElementValue, error) {
