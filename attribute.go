@@ -89,10 +89,92 @@ type LineNumber struct {
 	LineNumber uint16
 }
 
+type AttributeLocalVaribleTable struct {
+	LocalVaribleTable []*LocalVarible
+}
+
+func (a *AttributeLocalVaribleTable) Name() string {
+	return "LocalVaribleTable"
+}
+
+type LocalVarible struct {
+	StartPc         uint16
+	Length          uint16
+	NameIndex       uint16
+	DescriptorInedx uint16
+	Index           uint16
+}
+
+type AttributeLocalVaribleTypeTable struct {
+	LocalVaribleTypeTable []*LocalVaribleType
+}
+
+func (a *AttributeLocalVaribleTypeTable) Name() string {
+	return "LocalVaribleTypeTable"
+}
+
+type LocalVaribleType struct {
+	StartPc        uint16
+	Length         uint16
+	NameIndex      uint16
+	SignatureInedx uint16
+	Index          uint16
+}
+
 type AttributeDeprecated struct{}
 
 func (a *AttributeDeprecated) Name() string {
 	return "Deprecated"
+}
+
+type AttributeRuntimeVisibleAnnotations struct {
+	AttributeNameIndex uint16
+	Annotations        []*Annotation
+}
+
+func (a *AttributeRuntimeVisibleAnnotations) Name() string {
+	return "RuntimeVisibleAnnotations"
+}
+
+type Annotation struct {
+	TypeIndex         uint16
+	ElementValuePairs []*ElementValuePair
+}
+
+type ElementValuePair struct {
+	ElementNameIndex uint16
+	ElementValue     *ElementValue
+}
+
+type ElementValue struct {
+	Tag uint8
+
+	ConstValue *ElementValueConstValue
+
+	EnumConstValue *ElementValueEnumConstValue
+
+	ClassInfo *ElementValueClassInfo
+
+	AnnotationValue *Annotation
+
+	ArrayValue *ElementValueArrayValue
+}
+
+type ElementValueConstValue struct {
+	ConstValueIndex uint16
+}
+
+type ElementValueEnumConstValue struct {
+	TypeNameIndex  uint16
+	ConstNameIndex uint16
+}
+
+type ElementValueClassInfo struct {
+	ClassInfoIndex uint16
+}
+
+type ElementValueArrayValue struct {
+	Values []*ElementValue
 }
 
 type AttributeModulePackage struct {

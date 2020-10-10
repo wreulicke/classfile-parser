@@ -506,16 +506,89 @@ func readAttribute(p *BinaryParser, attributeLength uint32, attributeName string
 		}
 		return a, nil
 	case "LocalVariableTable":
-		goto notImplemented
+		localVaribleTableLength, err := p.readUint16()
+		if err != nil {
+			return nil, err
+		}
+		a := &AttributeLocalVaribleTable{}
+		var i uint16
+		for ; i < localVaribleTableLength; i++ {
+			ln := &LocalVarible{}
+			ln.StartPc, err = p.readUint16()
+			if err != nil {
+				return nil, err
+			}
+			ln.Length, err = p.readUint16()
+			if err != nil {
+				return nil, err
+			}
+			ln.NameIndex, err = p.readUint16()
+			if err != nil {
+				return nil, err
+			}
+			ln.DescriptorInedx, err = p.readUint16()
+			if err != nil {
+				return nil, err
+			}
+			ln.Index, err = p.readUint16()
+			if err != nil {
+				return nil, err
+			}
+			a.LocalVaribleTable = append(a.LocalVaribleTable, ln)
+		}
+		return a, nil
 	case "LocalVariableTypeTable":
-		goto notImplemented
+		localVaribleTypeLength, err := p.readUint16()
+		if err != nil {
+			return nil, err
+		}
+		a := &AttributeLocalVaribleTypeTable{}
+		var i uint16
+		for ; i < localVaribleTypeLength; i++ {
+			ln := &LocalVaribleType{}
+			ln.StartPc, err = p.readUint16()
+			if err != nil {
+				return nil, err
+			}
+			ln.Length, err = p.readUint16()
+			if err != nil {
+				return nil, err
+			}
+			ln.NameIndex, err = p.readUint16()
+			if err != nil {
+				return nil, err
+			}
+			ln.SignatureInedx, err = p.readUint16()
+			if err != nil {
+				return nil, err
+			}
+			ln.Index, err = p.readUint16()
+			if err != nil {
+				return nil, err
+			}
+			a.LocalVaribleTypeTable = append(a.LocalVaribleTypeTable, ln)
+		}
+		return a, nil
 	case "Deprecated":
 		if attributeLength != 0 {
 			return nil, errors.New("Deprecated attribute length should be 2")
 		}
 		return &AttributeDeprecated{}, nil
 	case "RuntimeVisibleAnnotations":
-		goto notImplemented
+		numAnnotations, err := p.readUint16()
+		if err != nil {
+			return nil, err
+		}
+		a := &AttributeRuntimeVisibleAnnotations{}
+		var i uint16
+		for ; i < numAnnotations; i++ {
+			annot, err := readAnnotation(p)
+			if err != nil {
+				return nil, err
+			}
+			a.Annotations = append(a.Annotations, annot)
+		}
+		return a, nil
 	case "RuntimeInvisibleAnnotations":
 		goto notImplemented
 	case "RuntimeVisibleParameterAnnotations":
@@ -575,6 +648,105 @@ func readAttribute(p *BinaryParser, attributeLength uint32, attributeName string
 	}
 notImplemented:
 	return nil, nil
+}
+
+func readAnnotation(parser *BinaryParser) (*Annotation, error) {
+	a := &Annotation{}
+	var err error
+	a.TypeIndex, err = parser.readUint16()
+	if err != nil {
+		return nil, err
+	}
+	numElementValuePair, err := parser.readUint16()
+	if err != nil {
+		return nil, err
+	}
+	var i uint16
+	for ; i < numElementValuePair; i++ {
+		p := &ElementValuePair{}
+		p.ElementNameIndex, err = parser.readUint16()
+		if err != nil {
+			return nil, err
+		}
+		a.ElementValuePairs = append(a.ElementValuePairs, p)
+	}
+	return nil, err
+}
+
+func readElementValue(parser *BinaryParser) (*ElementValue, error) {
+	tag, err := parser.readUint8()
+	if err != nil {
+		return nil, err
+	}
+	ev := &ElementValue{}
+	switch tag {
+	case 'B':
+		ev.ConstValue, err = readElementValueConst(parser)
+	case 'C':
+		ev.ConstValue, err = readElementValueConst(parser)
+	case 'F':
+		ev.ConstValue, err = readElementValueConst(parser)
+	case 'I':
+		ev.ConstValue, err = readElementValueConst(parser)
+	case 'J':
+		ev.ConstValue, err = readElementValueConst(parser)
+	case 'S':
+		ev.ConstValue, err = readElementValueConst(parser)
+	case 'Z':
+		ev.ConstValue, err = readElementValueConst(parser)
+	case 's':
+		ev.ConstValue, err = readElementValueConst(parser)
+	case 'e':
+		ev.EnumConstValue, err = readElementValueEnumConst(parser)
+	case 'c':
+		ev.ClassInfo, err = readElementClassInfo(parser)
+	case '@':
+		ev.AnnotationValue, err = readAnnotation(parser)
+	case '[':
+		ev.ArrayValue, err = readElementArrayValue(parser)
+	default:
+		err = errors.New("Unsupported tag for element value")
+	}
+	return ev, err
+}
+
+func readElementValueConst(parser *BinaryParser) (*ElementValueConstValue, error) {
+	e := &ElementValueConstValue{}
+	var err error
+	e.ConstValueIndex, err = parser.readUint16()
+	return e, err
+}
+
+func readElementValueEnumConst(parser *BinaryParser) (*ElementValueEnumConstValue, error) {
+	e := &ElementValueEnumConstValue{}
+	var err error
+	e.TypeNameIndex, err = parser.readUint16()
+	if err != nil {
+		return nil, err
+	}
+	e.ConstNameIndex, err = parser.readUint16()
+	return e, err
+}
+
+func readElementClassInfo(parser *BinaryParser) (*ElementValueClassInfo, error) {
+	e := &ElementValueClassInfo{}
+	var err error
+	e.ClassInfoIndex, err = parser.readUint16()
+	return e, err
+}
+
+func readElementArrayValue(parser *BinaryParser) (*ElementValueArrayValue, error) {
+	e := &ElementValueArrayValue{}
+	numValues, err := parser.readUint16()
+	var i uint16
+	for ; i < numValues; i++ {
+		v, err := readElementValue(parser)
+		if err != nil {
+			return nil, err
+		}
+		e.Values = append(e.Values, v)
+	}
+	return e, err
 }
 
 func (p *Parser) readBytes(size int) ([]byte, error) {
