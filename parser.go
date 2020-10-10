@@ -1,25 +1,19 @@
 package main
 
 import (
-	"bufio"
 	"bytes"
-	"encoding/binary"
 	"errors"
 	"fmt"
 	"io"
-	"math"
 )
 
 type Parser struct {
-	input  *bufio.Reader
-	buffer bytes.Buffer
-	// offset   int
+	*BinaryParser
 	error error
 }
 
 func New(input io.Reader) *Parser {
-	l := &Parser{input: bufio.NewReader(input)}
-	// l.offset = 0
+	l := &Parser{BinaryParser: NewBinaryParser(input)}
 	return l
 }
 
@@ -76,15 +70,10 @@ func (p *Parser) Parse() (*Classfile, error) {
 }
 
 func (p *Parser) readCaffbabe() error {
-	bs := make([]byte, 4)
-	n, err := p.input.Read(bs)
-	if n < 4 {
-		return fmt.Errorf("Cannot read 4 bytes. got %d", n)
-	}
+	bs, err := p.readBytes(4)
 	if err != nil {
 		return err
 	}
-
 	if !bytes.Equal(bs, []byte{0xCA, 0xFE, 0xBA, 0xBE}) {
 		return errors.New("magic is wrong")
 	}
@@ -387,7 +376,7 @@ func (p *Parser) readAttributes(c *ConstantPool) ([]Attribute, error) {
 	if err != nil {
 		return nil, err
 	}
-	as := make([]Attribute, count)
+	as := make([]Attribute, 0, count)
 	var i uint16
 	for ; i < count; i++ {
 		a, err := p.readAttribute(c)
@@ -412,11 +401,18 @@ func (p *Parser) readAttribute(constantPool *ConstantPool) (Attribute, error) {
 	if u == nil {
 		return nil, fmt.Errorf("attribute name index is invalid: index:%d", attributeNameIndex)
 	}
-	switch u.String() {
+	bs, err := p.readBytes(int(attributeLength))
+	if err != nil {
+		return nil, err
+	}
+	parser := NewBinaryParser(bytes.NewBuffer(bs))
+	return readAttribute(parser, attributeLength, u.String())
+}
+
+func readAttribute(p *BinaryParser, attributeLength uint32, attributeName string) (Attribute, error) {
+	var err error
+	switch attributeName {
 	case "ConstantValue":
-		if attributeLength != 2 {
-			return nil, errors.New("ContantValue attribute length should be 2")
-		}
 		a := &AttributeConstantValue{}
 		a.ConstantValueIndex, err = p.readUint16()
 		return a, err
@@ -482,16 +478,10 @@ func (p *Parser) readAttribute(constantPool *ConstantPool) (Attribute, error) {
 		a.Signature, err = p.readUint16()
 		return a, err
 	case "SourceFile":
-		if attributeLength != 2 {
-			return nil, errors.New("SourceFile attribute length should be 2")
-		}
 		a := &AttributeSourceFile{}
 		a.SourcefileIndex, err = p.readUint16()
 		return a, err
 	case "SourceDebugExtension":
-		if attributeLength != 2 {
-			return nil, errors.New("SourceFile attribute length should be 2")
-		}
 		a := &AttributeSourceDebugExtension{}
 		a.DebugExtension, err = p.readBytes(int(attributeLength))
 		return a, err
@@ -513,12 +503,6 @@ func (p *Parser) readAttribute(constantPool *ConstantPool) (Attribute, error) {
 				return nil, err
 			}
 			a.LineNumberTable = append(a.LineNumberTable, ln)
-		}
-		if attributeLength > 4*uint32(lineNumberTableLength)+2 {
-			_, err := p.readBytes(int(attributeLength - 4*uint32(lineNumberTableLength) - 2))
-			if err != nil {
-				return nil, err
-			}
 		}
 		return a, nil
 	case "LocalVariableTable":
@@ -590,10 +574,6 @@ func (p *Parser) readAttribute(constantPool *ConstantPool) (Attribute, error) {
 		return a, nil
 	}
 notImplemented:
-	_, err = p.readBytes(int(attributeLength)) // TODO support more attributes
-	if err != nil {
-		return nil, err
-	}
 	return nil, nil
 }
 
@@ -607,48 +587,4 @@ func (p *Parser) readBytes(size int) ([]byte, error) {
 		return nil, err
 	}
 	return bs, nil
-}
-
-func (p *Parser) readUint8() (uint8, error) {
-	return p.input.ReadByte()
-}
-
-func (p *Parser) readUint16() (uint16, error) {
-	bs, err := p.readBytes(2)
-	if err != nil {
-		return 0, err
-	}
-	return binary.BigEndian.Uint16(bs), nil
-}
-
-func (p *Parser) readUint32() (uint32, error) {
-	bs, err := p.readBytes(4)
-	if err != nil {
-		return 0, err
-	}
-	return binary.BigEndian.Uint32(bs), nil
-}
-
-func (p *Parser) readUint64() (uint64, error) {
-	bs, err := p.readBytes(8)
-	if err != nil {
-		return 0, err
-	}
-	return binary.BigEndian.Uint64(bs), nil
-}
-
-func (p *Parser) readFloat() (float32, error) {
-	bytes, err := p.readUint32()
-	if err == nil {
-		return math.Float32frombits(bytes), nil
-	}
-	return 0, err
-}
-
-func (p *Parser) readDouble() (float64, error) {
-	bytes, err := p.readUint64()
-	if err == nil {
-		return math.Float64frombits(bytes), nil
-	}
-	return 0, err
 }
