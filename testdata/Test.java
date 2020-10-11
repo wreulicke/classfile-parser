@@ -1,8 +1,60 @@
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Repeatable;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+@Deprecated
 class Test{
 
-    public static void main(String[] args) {
-        long x = 25;
+    @Deprecated
+    @Annot
+    public static void main(@Annot String[] args) {
+        @Annot long x = 25;
         System.out.println(x);
     }
 
+}
+
+class TypeParameter<@Annot T> extends @Annot Test {
+
+    @Annot("test")
+    public <@Annot t> @Annot T typeParameter() {
+        return null;
+    }
+}
+
+@Target({
+    ElementType.TYPE_USE,
+    ElementType.TYPE,
+    ElementType.TYPE_PARAMETER,
+    ElementType.LOCAL_VARIABLE,
+    ElementType.CONSTRUCTOR,
+    ElementType.ANNOTATION_TYPE,
+    ElementType.PARAMETER,
+    ElementType.PACKAGE,
+    ElementType.MODULE,
+    ElementType.METHOD,
+})
+@Repeatable(Annots.class)
+@Retention(RetentionPolicy.RUNTIME)
+@interface Annot {
+    String value() default "default";
+}
+
+@Target({
+    ElementType.TYPE_USE,
+    ElementType.TYPE,
+    ElementType.TYPE_PARAMETER,
+    ElementType.LOCAL_VARIABLE,
+    ElementType.CONSTRUCTOR,
+    ElementType.ANNOTATION_TYPE,
+    ElementType.PARAMETER,
+    ElementType.PACKAGE,
+    ElementType.MODULE,
+    ElementType.METHOD,
+})
+@Retention(RetentionPolicy.RUNTIME)
+@interface Annots {
+    Annot[] value();
 }
