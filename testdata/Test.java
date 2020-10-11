@@ -9,11 +9,16 @@ class Test{
 
     @Deprecated
     @Annot
-    public static void main(@Annot String[] args) {
+    public static void main(@Annot String[] args) throws @Annot Exception {
         @Annot long x = 25;
         System.out.println(x);
     }
 
+    @Annot
+    static class StaticNested {}
+    
+    @Annot
+    class Nested {}
 }
 
 class TypeParameter<@Annot T> extends @Annot Test {
