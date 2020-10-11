@@ -7,7 +7,7 @@ import (
 )
 
 func TestParse(t *testing.T) {
-	f, err := os.Open("./Test.class")
+	f, err := os.Open("./testdata/Test.class")
 	if err != nil {
 		t.Fatal(err)
 	}
