@@ -721,7 +721,135 @@ func readAttribute(p *BinaryParser, attributeLength uint32, attributeName string
 		}
 		return a, nil
 	case "Module":
-		goto notImplemented
+		a := &AttributeModule{}
+		a.ModuleNameIndex, err = p.readUint16()
+		if err != nil {
+			return nil, err
+		}
+		a.ModuleFlags, err = p.readUint16()
+		if err != nil {
+			return nil, err
+		}
+		a.ModuleVersionIndex, err = p.readUint16()
+		if err != nil {
+			return nil, err
+		}
+		requiresCount, err := p.readUint16()
+		if err != nil {
+			return nil, err
+		}
+
+		var i uint16
+		for ; i < requiresCount; i++ {
+			r := &Require{}
+			r.RequiresIndex, err = p.readUint16()
+			if err != nil {
+				return nil, err
+			}
+			r.RequiresFlags, err = p.readUint16()
+			if err != nil {
+				return nil, err
+			}
+			r.RequiresVersionIndex, err = p.readUint16()
+			if err != nil {
+				return nil, err
+			}
+			a.Requires = append(a.Requires, r)
+		}
+
+		exportsCount, err := p.readUint16()
+		if err != nil {
+			return nil, err
+		}
+		for i = 0; i < exportsCount; i++ {
+			e := &Export{}
+			e.ExportsIndex, err = p.readUint16()
+			if err != nil {
+				return nil, err
+			}
+			e.ExportsFlags, err = p.readUint16()
+			if err != nil {
+				return nil, err
+			}
+			exportsToCount, err := p.readUint16()
+			if err != nil {
+				return nil, err
+			}
+			var j uint16
+			for ; j < exportsToCount; j++ {
+				t, err := p.readUint16()
+				if err != nil {
+					return nil, err
+				}
+				e.ExportsTo = append(e.ExportsTo, t)
+			}
+		}
+
+		opensCount, err := p.readUint16()
+		if err != nil {
+			return nil, err
+		}
+		for i = 0; i < opensCount; i++ {
+			e := &Open{}
+			e.OpensIndex, err = p.readUint16()
+			if err != nil {
+				return nil, err
+			}
+			e.OpensFlags, err = p.readUint16()
+			if err != nil {
+				return nil, err
+			}
+			opensToCount, err := p.readUint16()
+			if err != nil {
+				return nil, err
+			}
+			var j uint16
+			for ; j < opensToCount; j++ {
+				t, err := p.readUint16()
+				if err != nil {
+					return nil, err
+				}
+				e.OpensTo = append(e.OpensTo, t)
+			}
+		}
+
+		usesCount, err := p.readUint16()
+		if err != nil {
+			return nil, err
+		}
+		for i = 0; i < usesCount; i++ {
+			use, err := p.readUint16()
+			if err != nil {
+				return nil, err
+			}
+			a.Uses = append(a.Uses, use)
+		}
+
+		providesCount, err := p.readUint16()
+		if err != nil {
+			return nil, err
+		}
+		for i = 0; i < providesCount; i++ {
+			e := &Provide{}
+			e.ProvidesIndex, err = p.readUint16()
+			if err != nil {
+				return nil, err
+			}
+			providesWithCount, err := p.readUint16()
+			if err != nil {
+				return nil, err
+			}
+			var j uint16
+			for ; j < providesWithCount; j++ {
+				t, err := p.readUint16()
+				if err != nil {
+					return nil, err
+				}
+				e.ProvidesWith = append(e.ProvidesWith, t)
+			}
+		}
+
+		return a, nil
 	case "ModulePackage":
 		packageCount, err := p.readUint16()
 		if err != nil {
