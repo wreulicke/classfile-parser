@@ -8,7 +8,7 @@ import (
 )
 
 type Parser struct {
-	*BinaryParser
+	BinaryParser
 	error error
 }
 
@@ -70,7 +70,7 @@ func (p *Parser) Parse() (*Classfile, error) {
 }
 
 func (p *Parser) readCaffbabe() error {
-	bs, err := p.readBytes(4)
+	bs, err := p.ReadBytes(4)
 	if err != nil {
 		return err
 	}
@@ -81,7 +81,7 @@ func (p *Parser) readCaffbabe() error {
 }
 
 func (p *Parser) readMinorVersion(c *Classfile) error {
-	v, err := p.readUint16()
+	v, err := p.ReadUint16()
 	if err != nil {
 		return err
 	}
@@ -90,7 +90,7 @@ func (p *Parser) readMinorVersion(c *Classfile) error {
 }
 
 func (p *Parser) readMajorVersion(c *Classfile) error {
-	v, err := p.readUint16()
+	v, err := p.ReadUint16()
 	if err != nil {
 		return err
 	}
@@ -99,7 +99,7 @@ func (p *Parser) readMajorVersion(c *Classfile) error {
 }
 
 func (p *Parser) readConstantPool(c *Classfile) error {
-	count, err := p.readUint16()
+	count, err := p.ReadUint16()
 	if err != nil {
 		return err
 	}
@@ -107,7 +107,7 @@ func (p *Parser) readConstantPool(c *Classfile) error {
 	cp := &ConstantPool{Constants: make([]Constant, count-1)}
 	c.ConstantPool = cp
 	for ; i < count-1; i++ {
-		tag, err := p.readUint8()
+		tag, err := p.ReadUint8()
 		if err != nil {
 			return nil
 		}
@@ -115,61 +115,61 @@ func (p *Parser) readConstantPool(c *Classfile) error {
 		case 7:
 			c := &ConstantClass{}
 			cp.Constants[i] = c
-			c.NameIndex, err = p.readUint16()
+			c.NameIndex, err = p.ReadUint16()
 			if err != nil {
 				return err
 			}
 		case 9:
 			c := &ConstantFieldref{}
 			cp.Constants[i] = c
-			c.ClassIndex, err = p.readUint16()
+			c.ClassIndex, err = p.ReadUint16()
 			if err != nil {
 				return err
 			}
-			c.NameAndTypeIndex, err = p.readUint16()
+			c.NameAndTypeIndex, err = p.ReadUint16()
 			if err != nil {
 				return err
 			}
 		case 10:
 			c := &ConstantMethodref{}
 			cp.Constants[i] = c
-			c.ClassIndex, err = p.readUint16()
+			c.ClassIndex, err = p.ReadUint16()
 			if err != nil {
 				return err
 			}
-			c.NameAndTypeIndex, err = p.readUint16()
+			c.NameAndTypeIndex, err = p.ReadUint16()
 			if err != nil {
 				return err
 			}
 		case 11:
 			c := &ConstantInterfaceMethodref{}
 			cp.Constants[i] = c
-			c.ClassIndex, err = p.readUint16()
+			c.ClassIndex, err = p.ReadUint16()
 			if err != nil {
 				return err
 			}
-			c.NameAndTypeIndex, err = p.readUint16()
+			c.NameAndTypeIndex, err = p.ReadUint16()
 			if err != nil {
 				return err
 			}
 		case 8:
 			c := &ConstantString{}
 			cp.Constants[i] = c
-			c.StringIndex, err = p.readUint16()
+			c.StringIndex, err = p.ReadUint16()
 			if err != nil {
 				return err
 			}
 		case 3:
 			c := &ConstantInteger{}
 			cp.Constants[i] = c
-			c.Bytes, err = p.readUint32()
+			c.Bytes, err = p.ReadUint32()
 			if err != nil {
 				return err
 			}
 		case 4:
 			c := &ConstantFloat{}
 			cp.Constants[i] = c
-			c.Bytes, err = p.readUint32()
+			c.Bytes, err = p.ReadUint32()
 			if err != nil {
 				return err
 			}
@@ -177,11 +177,11 @@ func (p *Parser) readConstantPool(c *Classfile) error {
 			c := &ConstantLong{}
 			cp.Constants[i] = c
 			i++
-			c.HighBytes, err = p.readUint32()
+			c.HighBytes, err = p.ReadUint32()
 			if err != nil {
 				return err
 			}
-			c.LowBytes, err = p.readUint32()
+			c.LowBytes, err = p.ReadUint32()
 			if err != nil {
 				return err
 			}
@@ -189,88 +189,88 @@ func (p *Parser) readConstantPool(c *Classfile) error {
 			c := &ConstantDouble{}
 			cp.Constants[i] = c
 			i++
-			c.HighBytes, err = p.readUint32()
+			c.HighBytes, err = p.ReadUint32()
 			if err != nil {
 				return err
 			}
-			c.LowBytes, err = p.readUint32()
+			c.LowBytes, err = p.ReadUint32()
 			if err != nil {
 				return err
 			}
 		case 12:
 			c := &ConstantNameAndType{}
 			cp.Constants[i] = c
-			c.NameIndex, err = p.readUint16()
+			c.NameIndex, err = p.ReadUint16()
 			if err != nil {
 				return err
 			}
-			c.DescriptorIndex, err = p.readUint16()
+			c.DescriptorIndex, err = p.ReadUint16()
 			if err != nil {
 				return err
 			}
 		case 1:
 			c := &ConstantUtf8{}
 			cp.Constants[i] = c
-			count, err := p.readUint16()
+			count, err := p.ReadUint16()
 			if err != nil {
 				return err
 			}
 
-			c.Bytes, err = p.readBytes(int(count))
+			c.Bytes, err = p.ReadBytes(int(count))
 			if err != nil {
 				return err
 			}
 		case 15:
 			c := &ConstantMethodHandle{}
 			cp.Constants[i] = c
-			c.ReferenceKind, err = p.readUint8()
+			c.ReferenceKind, err = p.ReadUint8()
 			if err != nil {
 				return err
 			}
-			c.ReferenceIndex, err = p.readUint16()
+			c.ReferenceIndex, err = p.ReadUint16()
 			if err != nil {
 				return err
 			}
 		case 16:
 			c := &ConstantMethodType{}
 			cp.Constants[i] = c
-			c.DescriptorIndex, err = p.readUint16()
+			c.DescriptorIndex, err = p.ReadUint16()
 			if err != nil {
 				return err
 			}
 		case 17:
 			c := &ConstantDynamic{}
 			cp.Constants[i] = c
-			c.BootstrapMethodAttrIndex, err = p.readUint16()
+			c.BootstrapMethodAttrIndex, err = p.ReadUint16()
 			if err != nil {
 				return err
 			}
-			c.NameAndTypeIndex, err = p.readUint16()
+			c.NameAndTypeIndex, err = p.ReadUint16()
 			if err != nil {
 				return err
 			}
 		case 18:
 			c := &ConstantInvokeDynamic{}
 			cp.Constants[i] = c
-			c.BootstrapMethodAttrIndex, err = p.readUint16()
+			c.BootstrapMethodAttrIndex, err = p.ReadUint16()
 			if err != nil {
 				return err
 			}
-			c.NameAndTypeIndex, err = p.readUint16()
+			c.NameAndTypeIndex, err = p.ReadUint16()
 			if err != nil {
 				return err
 			}
 		case 19:
 			c := &ConstantModule{}
 			cp.Constants[i] = c
-			c.NameIndex, err = p.readUint16()
+			c.NameIndex, err = p.ReadUint16()
 			if err != nil {
 				return err
 			}
 		case 20:
 			c := &ConstantPackage{}
 			cp.Constants[i] = c
-			c.NameIndex, err = p.readUint16()
+			c.NameIndex, err = p.ReadUint16()
 			if err != nil {
 				return err
 			}
@@ -283,28 +283,28 @@ func (p *Parser) readConstantPool(c *Classfile) error {
 }
 
 func (p *Parser) readAccessFlag(c *Classfile) (err error) {
-	c.AccessFlags, err = p.readUint16()
+	c.AccessFlags, err = p.ReadUint16()
 	return
 }
 
 func (p *Parser) readThisClass(c *Classfile) (err error) {
-	c.ThisClass, err = p.readUint16()
+	c.ThisClass, err = p.ReadUint16()
 	return
 }
 
 func (p *Parser) readSuperClass(c *Classfile) (err error) {
-	c.SuperClass, err = p.readUint16()
+	c.SuperClass, err = p.ReadUint16()
 	return
 }
 
 func (p *Parser) readInterfaces(c *Classfile) error {
-	count, err := p.readUint16()
+	count, err := p.ReadUint16()
 	if err != nil {
 		return err
 	}
 	var i uint16
 	for ; i < count; i++ {
-		interfaceIndex, err := p.readUint16()
+		interfaceIndex, err := p.ReadUint16()
 		if err != nil {
 			return err
 		}
@@ -314,7 +314,7 @@ func (p *Parser) readInterfaces(c *Classfile) error {
 }
 
 func (p *Parser) readFields(c *Classfile) error {
-	count, err := p.readUint16()
+	count, err := p.ReadUint16()
 	if err != nil {
 		return err
 	}
@@ -322,15 +322,15 @@ func (p *Parser) readFields(c *Classfile) error {
 	for ; i < count; i++ {
 		f := &Field{}
 		c.Fields = append(c.Fields, f)
-		f.AccessFlags, err = p.readUint16()
+		f.AccessFlags, err = p.ReadUint16()
 		if err != nil {
 			return err
 		}
-		f.NameIndex, err = p.readUint16()
+		f.NameIndex, err = p.ReadUint16()
 		if err != nil {
 			return err
 		}
-		f.DescriptorIndex, err = p.readUint16()
+		f.DescriptorIndex, err = p.ReadUint16()
 		if err != nil {
 			return err
 		}
@@ -343,7 +343,7 @@ func (p *Parser) readFields(c *Classfile) error {
 }
 
 func (p *Parser) readMethods(c *Classfile) error {
-	count, err := p.readUint16()
+	count, err := p.ReadUint16()
 	if err != nil {
 		return err
 	}
@@ -351,15 +351,15 @@ func (p *Parser) readMethods(c *Classfile) error {
 	for ; i < count; i++ {
 		m := &Method{}
 		c.Methods = append(c.Methods, m)
-		m.AccessFlags, err = p.readUint16()
+		m.AccessFlags, err = p.ReadUint16()
 		if err != nil {
 			return err
 		}
-		m.NameIndex, err = p.readUint16()
+		m.NameIndex, err = p.ReadUint16()
 		if err != nil {
 			return err
 		}
-		m.DescriptorIndex, err = p.readUint16()
+		m.DescriptorIndex, err = p.ReadUint16()
 		if err != nil {
 			return err
 		}
@@ -372,7 +372,7 @@ func (p *Parser) readMethods(c *Classfile) error {
 }
 
 func (p *Parser) readAttributes(c *ConstantPool) ([]Attribute, error) {
-	count, err := p.readUint16()
+	count, err := p.ReadUint16()
 	if err != nil {
 		return nil, err
 	}
@@ -389,11 +389,11 @@ func (p *Parser) readAttributes(c *ConstantPool) ([]Attribute, error) {
 }
 
 func (p *Parser) readAttribute(constantPool *ConstantPool) (Attribute, error) {
-	attributeNameIndex, err := p.readUint16()
+	attributeNameIndex, err := p.ReadUint16()
 	if err != nil {
 		return nil, err
 	}
-	attributeLength, err := p.readUint32()
+	attributeLength, err := p.ReadUint32()
 	if err != nil {
 		return nil, err
 	}
@@ -401,7 +401,7 @@ func (p *Parser) readAttribute(constantPool *ConstantPool) (Attribute, error) {
 	if u == nil {
 		return nil, fmt.Errorf("attribute name index is invalid: index:%d", attributeNameIndex)
 	}
-	bs, err := p.readBytes(int(attributeLength))
+	bs, err := p.ReadBytes(int(attributeLength))
 	if err != nil {
 		return nil, err
 	}
@@ -409,33 +409,81 @@ func (p *Parser) readAttribute(constantPool *ConstantPool) (Attribute, error) {
 	return readAttribute(parser, attributeLength, u.String())
 }
 
-func readAttribute(p *BinaryParser, attributeLength uint32, attributeName string) (Attribute, error) {
+func readAttribute(p BinaryParser, attributeLength uint32, attributeName string) (Attribute, error) {
 	var err error
 	switch attributeName {
 	case "ConstantValue":
 		a := &AttributeConstantValue{}
-		a.ConstantValueIndex, err = p.readUint16()
+		a.ConstantValueIndex, err = p.ReadUint16()
 		return a, err
 	case "Code":
-		goto notImplemented
+		a := &AttributeCode{}
+		a.MaxStack, err = p.ReadUint16()
+		if err != nil {
+			return nil, err
+		}
+		a.MaxLocals, err = p.ReadUint16()
+		if err != nil {
+			return nil, err
+		}
+		codeLength, err := p.ReadUint32()
+		if err != nil {
+			return nil, err
+		}
+		var i uint32
+		for ; i < codeLength; i++ {
+			code, err := p.ReadUint8()
+			if err != nil {
+				return nil, err
+			}
+			a.Codes = append(a.Codes, code)
+		}
+
+		exceptionTableLength, err := p.ReadUint16()
+		if err != nil {
+			return nil, err
+		}
+		var j uint16
+		for ; j < exceptionTableLength; j++ {
+			e := &Exception{}
+			e.StartPc, err = p.ReadUint16()
+			if err != nil {
+				return nil, err
+			}
+			e.EndPc, err = p.ReadUint16()
+			if err != nil {
+				return nil, err
+			}
+			e.HandlerPc, err = p.ReadUint16()
+			if err != nil {
+				return nil, err
+			}
+			e.CatchType, err = p.ReadUint16()
+			if err != nil {
+				return nil, err
+			}
+			a.ExceptionTable = append(a.ExceptionTable, e)
+		}
+
+		return a, nil
 	case "StackMapTable":
 		goto notImplemented
 	case "Exceptions":
-		exceptionCount, err := p.readUint16()
+		exceptionCount, err := p.ReadUint16()
 		if err != nil {
 			return nil, err
 		}
 		a := &AttributeExceptions{ExceptionIndexes: make([]uint16, 0, exceptionCount)}
 		var i uint16
 		for ; i < exceptionCount; i++ {
-			exceptionIndex, err := p.readUint16()
+			exceptionIndex, err := p.ReadUint16()
 			if err != nil {
 				return nil, err
 			}
 			a.ExceptionIndexes = append(a.ExceptionIndexes, exceptionIndex)
 		}
 	case "InnerClasses":
-		numberOfClasses, err := p.readUint16()
+		numberOfClasses, err := p.ReadUint16()
 		if err != nil {
 			return nil, err
 		}
@@ -443,19 +491,19 @@ func readAttribute(p *BinaryParser, attributeLength uint32, attributeName string
 		var i uint16
 		for ; i < numberOfClasses; i++ {
 			c := &InnerClass{}
-			c.InnerClassInfoIndex, err = p.readUint16()
+			c.InnerClassInfoIndex, err = p.ReadUint16()
 			if err != nil {
 				return nil, err
 			}
-			c.OuterClassInfoIndex, err = p.readUint16()
+			c.OuterClassInfoIndex, err = p.ReadUint16()
 			if err != nil {
 				return nil, err
 			}
-			c.InnerNameIndex, err = p.readUint16()
+			c.InnerNameIndex, err = p.ReadUint16()
 			if err != nil {
 				return nil, err
 			}
-			c.InnerClassAccessFlags, err = p.readUint16()
+			c.InnerClassAccessFlags, err = p.ReadUint16()
 			if err != nil {
 				return nil, err
 			}
@@ -464,29 +512,29 @@ func readAttribute(p *BinaryParser, attributeLength uint32, attributeName string
 		return a, nil
 	case "EnclosingMethod":
 		a := &AttributeEnclosingMethod{}
-		a.ClassIndex, err = p.readUint16()
+		a.ClassIndex, err = p.ReadUint16()
 		if err != nil {
 			return nil, err
 		}
-		a.MethodIndex, err = p.readUint16()
+		a.MethodIndex, err = p.ReadUint16()
 		return a, err
 	case "Synthetic":
 		a := &AttributeSynthetic{}
 		return a, nil
 	case "Signature":
 		a := &AttributeSignature{}
-		a.Signature, err = p.readUint16()
+		a.Signature, err = p.ReadUint16()
 		return a, err
 	case "SourceFile":
 		a := &AttributeSourceFile{}
-		a.SourcefileIndex, err = p.readUint16()
+		a.SourcefileIndex, err = p.ReadUint16()
 		return a, err
 	case "SourceDebugExtension":
 		a := &AttributeSourceDebugExtension{}
-		a.DebugExtension, err = p.readBytes(int(attributeLength))
+		a.DebugExtension, err = p.ReadBytes(int(attributeLength))
 		return a, err
 	case "LineNumberTable":
-		lineNumberTableLength, err := p.readUint16()
+		lineNumberTableLength, err := p.ReadUint16()
 		if err != nil {
 			return nil, err
 		}
@@ -494,11 +542,11 @@ func readAttribute(p *BinaryParser, attributeLength uint32, attributeName string
 		var i uint16
 		for ; i < lineNumberTableLength; i++ {
 			ln := &LineNumber{}
-			ln.StartPc, err = p.readUint16()
+			ln.StartPc, err = p.ReadUint16()
 			if err != nil {
 				return nil, err
 			}
-			ln.LineNumber, err = p.readUint16()
+			ln.LineNumber, err = p.ReadUint16()
 			if err != nil {
 				return nil, err
 			}
@@ -506,7 +554,7 @@ func readAttribute(p *BinaryParser, attributeLength uint32, attributeName string
 		}
 		return a, nil
 	case "LocalVariableTable":
-		localVaribleTableLength, err := p.readUint16()
+		localVaribleTableLength, err := p.ReadUint16()
 		if err != nil {
 			return nil, err
 		}
@@ -514,23 +562,23 @@ func readAttribute(p *BinaryParser, attributeLength uint32, attributeName string
 		var i uint16
 		for ; i < localVaribleTableLength; i++ {
 			ln := &LocalVarible{}
-			ln.StartPc, err = p.readUint16()
+			ln.StartPc, err = p.ReadUint16()
 			if err != nil {
 				return nil, err
 			}
-			ln.Length, err = p.readUint16()
+			ln.Length, err = p.ReadUint16()
 			if err != nil {
 				return nil, err
 			}
-			ln.NameIndex, err = p.readUint16()
+			ln.NameIndex, err = p.ReadUint16()
 			if err != nil {
 				return nil, err
 			}
-			ln.DescriptorInedx, err = p.readUint16()
+			ln.DescriptorInedx, err = p.ReadUint16()
 			if err != nil {
 				return nil, err
 			}
-			ln.Index, err = p.readUint16()
+			ln.Index, err = p.ReadUint16()
 			if err != nil {
 				return nil, err
 			}
@@ -538,7 +586,7 @@ func readAttribute(p *BinaryParser, attributeLength uint32, attributeName string
 		}
 		return a, nil
 	case "LocalVariableTypeTable":
-		localVaribleTypeLength, err := p.readUint16()
+		localVaribleTypeLength, err := p.ReadUint16()
 		if err != nil {
 			return nil, err
 		}
@@ -546,23 +594,23 @@ func readAttribute(p *BinaryParser, attributeLength uint32, attributeName string
 		var i uint16
 		for ; i < localVaribleTypeLength; i++ {
 			ln := &LocalVaribleType{}
-			ln.StartPc, err = p.readUint16()
+			ln.StartPc, err = p.ReadUint16()
 			if err != nil {
 				return nil, err
 			}
-			ln.Length, err = p.readUint16()
+			ln.Length, err = p.ReadUint16()
 			if err != nil {
 				return nil, err
 			}
-			ln.NameIndex, err = p.readUint16()
+			ln.NameIndex, err = p.ReadUint16()
 			if err != nil {
 				return nil, err
 			}
-			ln.SignatureInedx, err = p.readUint16()
+			ln.SignatureInedx, err = p.ReadUint16()
 			if err != nil {
 				return nil, err
 			}
-			ln.Index, err = p.readUint16()
+			ln.Index, err = p.ReadUint16()
 			if err != nil {
 				return nil, err
 			}
@@ -575,7 +623,7 @@ func readAttribute(p *BinaryParser, attributeLength uint32, attributeName string
 		}
 		return &AttributeDeprecated{}, nil
 	case "RuntimeVisibleAnnotations":
-		numAnnotations, err := p.readUint16()
+		numAnnotations, err := p.ReadUint16()
 		if err != nil {
 			return nil, err
 		}
@@ -590,7 +638,7 @@ func readAttribute(p *BinaryParser, attributeLength uint32, attributeName string
 		}
 		return a, nil
 	case "RuntimeInvisibleAnnotations":
-		numAnnotations, err := p.readUint16()
+		numAnnotations, err := p.ReadUint16()
 		if err != nil {
 			return nil, err
 		}
@@ -605,7 +653,7 @@ func readAttribute(p *BinaryParser, attributeLength uint32, attributeName string
 		}
 		return a, nil
 	case "RuntimeVisibleParameterAnnotations":
-		numAnnotations, err := p.readUint16()
+		numAnnotations, err := p.ReadUint16()
 		if err != nil {
 			return nil, err
 		}
@@ -620,7 +668,7 @@ func readAttribute(p *BinaryParser, attributeLength uint32, attributeName string
 		}
 		return a, nil
 	case "RuntimeInvisibleParameterAnnotations":
-		numAnnotations, err := p.readUint16()
+		numAnnotations, err := p.ReadUint16()
 		if err != nil {
 			return nil, err
 		}
@@ -635,7 +683,7 @@ func readAttribute(p *BinaryParser, attributeLength uint32, attributeName string
 		}
 		return a, nil
 	case "RuntimeVisibleTypeAnnotations":
-		numAnnotations, err := p.readUint16()
+		numAnnotations, err := p.ReadUint16()
 		if err != nil {
 			return nil, err
 		}
@@ -650,7 +698,7 @@ func readAttribute(p *BinaryParser, attributeLength uint32, attributeName string
 		}
 		return a, nil
 	case "RuntimeInvisibleTypeAnnotations":
-		numAnnotations, err := p.readUint16()
+		numAnnotations, err := p.ReadUint16()
 		if err != nil {
 			return nil, err
 		}
@@ -673,7 +721,7 @@ func readAttribute(p *BinaryParser, attributeLength uint32, attributeName string
 			DefaultValue: value,
 		}, nil
 	case "BoostrapMethods":
-		numBootstrapMethods, err := p.readUint16()
+		numBootstrapMethods, err := p.ReadUint16()
 		if err != nil {
 			return nil, err
 		}
@@ -681,17 +729,17 @@ func readAttribute(p *BinaryParser, attributeLength uint32, attributeName string
 		var i uint16
 		for ; i < numBootstrapMethods; i++ {
 			b := &BootstrapMethod{}
-			b.BootstrapMethodRef, err = p.readUint16()
+			b.BootstrapMethodRef, err = p.ReadUint16()
 			if err != nil {
 				return nil, err
 			}
-			numBootstrapArguments, err := p.readUint16()
+			numBootstrapArguments, err := p.ReadUint16()
 			if err != nil {
 				return nil, err
 			}
 			var j uint16
 			for ; j < numBootstrapArguments; j++ {
-				a, err := p.readUint16()
+				a, err := p.ReadUint16()
 				if err != nil {
 					return nil, err
 				}
@@ -701,7 +749,7 @@ func readAttribute(p *BinaryParser, attributeLength uint32, attributeName string
 		}
 		return attribute, nil
 	case "MethodParameters":
-		parametersCount, err := p.readUint8()
+		parametersCount, err := p.ReadUint8()
 		if err != nil {
 			return nil, err
 		}
@@ -709,11 +757,11 @@ func readAttribute(p *BinaryParser, attributeLength uint32, attributeName string
 		var i uint8
 		for ; i < parametersCount; i++ {
 			param := &MethodParameter{}
-			param.NameIndex, err = p.readUint16()
+			param.NameIndex, err = p.ReadUint16()
 			if err != nil {
 				return nil, err
 			}
-			param.AccessFlags, err = p.readUint16()
+			param.AccessFlags, err = p.ReadUint16()
 			if err != nil {
 				return nil, err
 			}
@@ -722,19 +770,19 @@ func readAttribute(p *BinaryParser, attributeLength uint32, attributeName string
 		return a, nil
 	case "Module":
 		a := &AttributeModule{}
-		a.ModuleNameIndex, err = p.readUint16()
+		a.ModuleNameIndex, err = p.ReadUint16()
 		if err != nil {
 			return nil, err
 		}
-		a.ModuleFlags, err = p.readUint16()
+		a.ModuleFlags, err = p.ReadUint16()
 		if err != nil {
 			return nil, err
 		}
-		a.ModuleVersionIndex, err = p.readUint16()
+		a.ModuleVersionIndex, err = p.ReadUint16()
 		if err != nil {
 			return nil, err
 		}
-		requiresCount, err := p.readUint16()
+		requiresCount, err := p.ReadUint16()
 		if err != nil {
 			return nil, err
 		}
@@ -742,42 +790,42 @@ func readAttribute(p *BinaryParser, attributeLength uint32, attributeName string
 		var i uint16
 		for ; i < requiresCount; i++ {
 			r := &Require{}
-			r.RequiresIndex, err = p.readUint16()
+			r.RequiresIndex, err = p.ReadUint16()
 			if err != nil {
 				return nil, err
 			}
-			r.RequiresFlags, err = p.readUint16()
+			r.RequiresFlags, err = p.ReadUint16()
 			if err != nil {
 				return nil, err
 			}
-			r.RequiresVersionIndex, err = p.readUint16()
+			r.RequiresVersionIndex, err = p.ReadUint16()
 			if err != nil {
 				return nil, err
 			}
 			a.Requires = append(a.Requires, r)
 		}
 
-		exportsCount, err := p.readUint16()
+		exportsCount, err := p.ReadUint16()
 		if err != nil {
 			return nil, err
 		}
 		for i = 0; i < exportsCount; i++ {
 			e := &Export{}
-			e.ExportsIndex, err = p.readUint16()
+			e.ExportsIndex, err = p.ReadUint16()
 			if err != nil {
 				return nil, err
 			}
-			e.ExportsFlags, err = p.readUint16()
+			e.ExportsFlags, err = p.ReadUint16()
 			if err != nil {
 				return nil, err
 			}
-			exportsToCount, err := p.readUint16()
+			exportsToCount, err := p.ReadUint16()
 			if err != nil {
 				return nil, err
 			}
 			var j uint16
 			for ; j < exportsToCount; j++ {
-				t, err := p.readUint16()
+				t, err := p.ReadUint16()
 				if err != nil {
 					return nil, err
 				}
@@ -785,27 +833,27 @@ func readAttribute(p *BinaryParser, attributeLength uint32, attributeName string
 			}
 		}
 
-		opensCount, err := p.readUint16()
+		opensCount, err := p.ReadUint16()
 		if err != nil {
 			return nil, err
 		}
 		for i = 0; i < opensCount; i++ {
 			e := &Open{}
-			e.OpensIndex, err = p.readUint16()
+			e.OpensIndex, err = p.ReadUint16()
 			if err != nil {
 				return nil, err
 			}
-			e.OpensFlags, err = p.readUint16()
+			e.OpensFlags, err = p.ReadUint16()
 			if err != nil {
 				return nil, err
 			}
-			opensToCount, err := p.readUint16()
+			opensToCount, err := p.ReadUint16()
 			if err != nil {
 				return nil, err
 			}
 			var j uint16
 			for ; j < opensToCount; j++ {
-				t, err := p.readUint16()
+				t, err := p.ReadUint16()
 				if err != nil {
 					return nil, err
 				}
@@ -813,35 +861,35 @@ func readAttribute(p *BinaryParser, attributeLength uint32, attributeName string
 			}
 		}
 
-		usesCount, err := p.readUint16()
+		usesCount, err := p.ReadUint16()
 		if err != nil {
 			return nil, err
 		}
 		for i = 0; i < usesCount; i++ {
-			use, err := p.readUint16()
+			use, err := p.ReadUint16()
 			if err != nil {
 				return nil, err
 			}
 			a.Uses = append(a.Uses, use)
 		}
 
-		providesCount, err := p.readUint16()
+		providesCount, err := p.ReadUint16()
 		if err != nil {
 			return nil, err
 		}
 		for i = 0; i < providesCount; i++ {
 			e := &Provide{}
-			e.ProvidesIndex, err = p.readUint16()
+			e.ProvidesIndex, err = p.ReadUint16()
 			if err != nil {
 				return nil, err
 			}
-			providesWithCount, err := p.readUint16()
+			providesWithCount, err := p.ReadUint16()
 			if err != nil {
 				return nil, err
 			}
 			var j uint16
 			for ; j < providesWithCount; j++ {
-				t, err := p.readUint16()
+				t, err := p.ReadUint16()
 				if err != nil {
 					return nil, err
 				}
@@ -851,14 +899,14 @@ func readAttribute(p *BinaryParser, attributeLength uint32, attributeName string
 
 		return a, nil
 	case "ModulePackage":
-		packageCount, err := p.readUint16()
+		packageCount, err := p.ReadUint16()
 		if err != nil {
 			return nil, err
 		}
 		a := &AttributeModulePackage{PackageIndexes: make([]uint16, 0, packageCount)}
 		var i uint16
 		for ; i < packageCount; i++ {
-			packageIndex, err := p.readUint16()
+			packageIndex, err := p.ReadUint16()
 			if err != nil {
 				return nil, err
 			}
@@ -867,21 +915,21 @@ func readAttribute(p *BinaryParser, attributeLength uint32, attributeName string
 		return a, nil
 	case "ModuleMainClass":
 		a := &AttributeModuleMainClass{}
-		a.MainClassIndex, err = p.readUint16()
+		a.MainClassIndex, err = p.ReadUint16()
 		return a, err
 	case "NestHost":
 		a := &AttributeNestHost{}
-		a.HostClassIndex, err = p.readUint16()
+		a.HostClassIndex, err = p.ReadUint16()
 		return a, err
 	case "NestMembers":
-		numberOfClasses, err := p.readUint16()
+		numberOfClasses, err := p.ReadUint16()
 		if err != nil {
 			return nil, err
 		}
 		a := &AttributeNestMembers{Classes: make([]uint16, 0, numberOfClasses)}
 		var i uint16
 		for ; i < numberOfClasses; i++ {
-			class, err := p.readUint16()
+			class, err := p.ReadUint16()
 			if err != nil {
 				return nil, err
 			}
@@ -893,10 +941,10 @@ notImplemented:
 	return nil, nil
 }
 
-func readAnnotation(parser *BinaryParser) (*Annotation, error) {
+func readAnnotation(parser BinaryParser) (*Annotation, error) {
 	a := &Annotation{}
 	var err error
-	a.TypeIndex, err = parser.readUint16()
+	a.TypeIndex, err = parser.ReadUint16()
 	if err != nil {
 		return nil, err
 	}
@@ -904,8 +952,8 @@ func readAnnotation(parser *BinaryParser) (*Annotation, error) {
 	return a, err
 }
 
-func readElementValuePairs(parser *BinaryParser) ([]*ElementValuePair, error) {
-	numElementValuePair, err := parser.readUint16()
+func readElementValuePairs(parser BinaryParser) ([]*ElementValuePair, error) {
+	numElementValuePair, err := parser.ReadUint16()
 	if err != nil {
 		return nil, err
 	}
@@ -921,16 +969,16 @@ func readElementValuePairs(parser *BinaryParser) ([]*ElementValuePair, error) {
 	return pairs, nil
 }
 
-func readElementValuePair(parser *BinaryParser) (*ElementValuePair, error) {
+func readElementValuePair(parser BinaryParser) (*ElementValuePair, error) {
 	p := &ElementValuePair{}
 	var err error
-	p.ElementNameIndex, err = parser.readUint16()
+	p.ElementNameIndex, err = parser.ReadUint16()
 	return p, err
 }
 
-func readParameterAnnotation(parser *BinaryParser) (*ParameterAnnotation, error) {
+func readParameterAnnotation(parser BinaryParser) (*ParameterAnnotation, error) {
 	a := &ParameterAnnotation{}
-	numAnnotations, err := parser.readUint16()
+	numAnnotations, err := parser.ReadUint16()
 	if err != nil {
 		return nil, err
 	}
@@ -945,9 +993,9 @@ func readParameterAnnotation(parser *BinaryParser) (*ParameterAnnotation, error)
 	return a, nil
 }
 
-func readTypeAnnotation(parser *BinaryParser) (*TypeAnnotation, error) {
+func readTypeAnnotation(parser BinaryParser) (*TypeAnnotation, error) {
 	a := &TypeAnnotation{}
-	targetType, err := parser.readUint8()
+	targetType, err := parser.ReadUint8()
 	if err != nil {
 		return nil, err
 	}
@@ -1003,7 +1051,7 @@ func readTypeAnnotation(parser *BinaryParser) (*TypeAnnotation, error) {
 	if err != nil {
 		return nil, err
 	}
-	a.TypeIndex, err = parser.readUint16()
+	a.TypeIndex, err = parser.ReadUint16()
 	if err != nil {
 		return nil, err
 	}
@@ -1014,48 +1062,48 @@ func readTypeAnnotation(parser *BinaryParser) (*TypeAnnotation, error) {
 	return a, nil
 }
 
-func readTypeParameterTarget(parser *BinaryParser) (TargetInfo, error) {
+func readTypeParameterTarget(parser BinaryParser) (TargetInfo, error) {
 	target := &TypeParameterTarget{}
 	var err error
-	target.TypeParameterIndex, err = parser.readUint8()
+	target.TypeParameterIndex, err = parser.ReadUint8()
 	return target, err
 }
 
-func readSuperTypeTarget(parser *BinaryParser) (TargetInfo, error) {
+func readSuperTypeTarget(parser BinaryParser) (TargetInfo, error) {
 	target := &SuperTypeTarget{}
 	var err error
-	target.SuperTypeIndex, err = parser.readUint16()
+	target.SuperTypeIndex, err = parser.ReadUint16()
 	return target, err
 }
 
-func readTypeParameterBoundTarget(parser *BinaryParser) (TargetInfo, error) {
+func readTypeParameterBoundTarget(parser BinaryParser) (TargetInfo, error) {
 	target := &TypeParameterBoundTarget{}
 	var err error
-	target.TypeParameterIndex, err = parser.readUint8()
+	target.TypeParameterIndex, err = parser.ReadUint8()
 	if err != nil {
 		return nil, err
 	}
-	target.BoundIndex, err = parser.readUint8()
+	target.BoundIndex, err = parser.ReadUint8()
 	return target, err
 }
 
-func readFormalParameterTarget(parser *BinaryParser) (TargetInfo, error) {
+func readFormalParameterTarget(parser BinaryParser) (TargetInfo, error) {
 	target := &FormalParameterTarget{}
 	var err error
-	target.FormalParameterIndex, err = parser.readUint8()
+	target.FormalParameterIndex, err = parser.ReadUint8()
 	return target, err
 }
 
-func readThrowsTarget(parser *BinaryParser) (TargetInfo, error) {
+func readThrowsTarget(parser BinaryParser) (TargetInfo, error) {
 	target := &ThrowsTarget{}
 	var err error
-	target.ThrowsTypeIndex, err = parser.readUint16()
+	target.ThrowsTypeIndex, err = parser.ReadUint16()
 	return target, err
 }
 
-func readLocalVarTarget(parser *BinaryParser) (TargetInfo, error) {
+func readLocalVarTarget(parser BinaryParser) (TargetInfo, error) {
 	target := &LocalVarTarget{}
-	tableLength, err := parser.readUint16()
+	tableLength, err := parser.ReadUint16()
 	if err != nil {
 		return nil, err
 	}
@@ -1070,48 +1118,48 @@ func readLocalVarTarget(parser *BinaryParser) (TargetInfo, error) {
 	return target, err
 }
 
-func readLocalVarTargetTable(parser *BinaryParser) (*LocalVarTargetTable, error) {
+func readLocalVarTargetTable(parser BinaryParser) (*LocalVarTargetTable, error) {
 	t := &LocalVarTargetTable{}
 	var err error
-	t.StartPc, err = parser.readUint16()
+	t.StartPc, err = parser.ReadUint16()
 	if err != nil {
 		return nil, err
 	}
-	t.Length, err = parser.readUint16()
+	t.Length, err = parser.ReadUint16()
 	if err != nil {
 		return nil, err
 	}
-	t.Index, err = parser.readUint16()
+	t.Index, err = parser.ReadUint16()
 	return t, err
 }
 
-func readCatchTarget(parser *BinaryParser) (TargetInfo, error) {
+func readCatchTarget(parser BinaryParser) (TargetInfo, error) {
 	target := &CatchTarget{}
 	var err error
-	target.ExceptionTableIndex, err = parser.readUint16()
+	target.ExceptionTableIndex, err = parser.ReadUint16()
 	return target, err
 }
 
-func readOffsetTarget(parser *BinaryParser) (TargetInfo, error) {
+func readOffsetTarget(parser BinaryParser) (TargetInfo, error) {
 	target := &OffsetTarget{}
 	var err error
-	target.Offset, err = parser.readUint16()
+	target.Offset, err = parser.ReadUint16()
 	return target, err
 }
 
-func readTypeArgumentTarget(parser *BinaryParser) (TargetInfo, error) {
+func readTypeArgumentTarget(parser BinaryParser) (TargetInfo, error) {
 	target := &TypeArgumentTarget{}
 	var err error
-	target.Offset, err = parser.readUint16()
+	target.Offset, err = parser.ReadUint16()
 	if err != nil {
 		return nil, err
 	}
-	target.TypeArgumentIndex, err = parser.readUint8()
+	target.TypeArgumentIndex, err = parser.ReadUint8()
 	return target, err
 }
 
-func readTypePath(parser *BinaryParser) (*TypePath, error) {
-	pathLength, err := parser.readUint8()
+func readTypePath(parser BinaryParser) (*TypePath, error) {
+	pathLength, err := parser.ReadUint8()
 	if err != nil {
 		return nil, err
 	}
@@ -1119,11 +1167,11 @@ func readTypePath(parser *BinaryParser) (*TypePath, error) {
 	var i uint8
 	for ; i < pathLength; i++ {
 		path := &Path{}
-		path.TypePathKind, err = parser.readUint8()
+		path.TypePathKind, err = parser.ReadUint8()
 		if err != nil {
 			return nil, err
 		}
-		path.TypeArgumentIndex, err = parser.readUint8()
+		path.TypeArgumentIndex, err = parser.ReadUint8()
 		if err != nil {
 			return nil, err
 		}
@@ -1132,8 +1180,8 @@ func readTypePath(parser *BinaryParser) (*TypePath, error) {
 	return typePath, nil
 }
 
-func readElementValue(parser *BinaryParser) (*ElementValue, error) {
-	tag, err := parser.readUint8()
+func readElementValue(parser BinaryParser) (*ElementValue, error) {
+	tag, err := parser.ReadUint8()
 	if err != nil {
 		return nil, err
 	}
@@ -1169,34 +1217,34 @@ func readElementValue(parser *BinaryParser) (*ElementValue, error) {
 	return ev, err
 }
 
-func readElementValueConst(parser *BinaryParser) (*ElementValueConstValue, error) {
+func readElementValueConst(parser BinaryParser) (*ElementValueConstValue, error) {
 	e := &ElementValueConstValue{}
 	var err error
-	e.ConstValueIndex, err = parser.readUint16()
+	e.ConstValueIndex, err = parser.ReadUint16()
 	return e, err
 }
 
-func readElementValueEnumConst(parser *BinaryParser) (*ElementValueEnumConstValue, error) {
+func readElementValueEnumConst(parser BinaryParser) (*ElementValueEnumConstValue, error) {
 	e := &ElementValueEnumConstValue{}
 	var err error
-	e.TypeNameIndex, err = parser.readUint16()
+	e.TypeNameIndex, err = parser.ReadUint16()
 	if err != nil {
 		return nil, err
 	}
-	e.ConstNameIndex, err = parser.readUint16()
+	e.ConstNameIndex, err = parser.ReadUint16()
 	return e, err
 }
 
-func readElementClassInfo(parser *BinaryParser) (*ElementValueClassInfo, error) {
+func readElementClassInfo(parser BinaryParser) (*ElementValueClassInfo, error) {
 	e := &ElementValueClassInfo{}
 	var err error
-	e.ClassInfoIndex, err = parser.readUint16()
+	e.ClassInfoIndex, err = parser.ReadUint16()
 	return e, err
 }
 
-func readElementArrayValue(parser *BinaryParser) (*ElementValueArrayValue, error) {
+func readElementArrayValue(parser BinaryParser) (*ElementValueArrayValue, error) {
 	e := &ElementValueArrayValue{}
-	numValues, err := parser.readUint16()
+	numValues, err := parser.ReadUint16()
 	var i uint16
 	for ; i < numValues; i++ {
 		v, err := readElementValue(parser)
@@ -1206,16 +1254,4 @@ func readElementArrayValue(parser *BinaryParser) (*ElementValueArrayValue, error
 		e.Values = append(e.Values, v)
 	}
 	return e, err
-}
-
-func (p *Parser) readBytes(size int) ([]byte, error) {
-	bs := make([]byte, size)
-	n, err := io.ReadFull(p.input, bs)
-	if n != size {
-		return nil, fmt.Errorf("Cannot read %d bytes. got %d bytes", size, n)
-	}
-	if err != nil {
-		return nil, err
-	}
-	return bs, nil
 }

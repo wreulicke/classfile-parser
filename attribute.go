@@ -12,6 +12,25 @@ func (a *AttributeConstantValue) Name() string {
 	return "ConstantValue"
 }
 
+type AttributeCode struct {
+	MaxStack       uint16
+	MaxLocals      uint16
+	Codes          []uint8
+	ExceptionTable []*Exception
+	Attributes     []Attribute
+}
+
+type Exception struct {
+	StartPc   uint16
+	EndPc     uint16
+	HandlerPc uint16
+	CatchType uint16
+}
+
+func (a *AttributeCode) Name() string {
+	return "Code"
+}
+
 type AttributeExceptions struct {
 	ExceptionIndexes []uint16
 }
