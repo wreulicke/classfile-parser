@@ -1,4 +1,4 @@
-package main
+package parser
 
 type Field struct {
 	AccessFlags     uint16

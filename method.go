@@ -1,4 +1,4 @@
-package main
+package parser
 
 type Method struct {
 	AccessFlags     uint16
