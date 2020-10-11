@@ -27,7 +27,7 @@ type Classfile struct {
 	Interfaces   []uint16
 	Fields       []*Field
 	Methods      []*Method
-	Attribute    []Attribute
+	Attributes   []Attribute
 }
 
 func (p *Parser) Parse() (*Classfile, error) {
@@ -63,7 +63,7 @@ func (p *Parser) Parse() (*Classfile, error) {
 	if err := p.readMethods(c); err != nil {
 		return nil, err
 	}
-	if c.Attribute, err = p.readAttributes(c.ConstantPool); err != nil {
+	if c.Attributes, err = readAttributes(p, c.ConstantPool); err != nil {
 		return nil, err
 	}
 	return c, nil
@@ -334,7 +334,7 @@ func (p *Parser) readFields(c *Classfile) error {
 		if err != nil {
 			return err
 		}
-		f.Attributes, err = p.readAttributes(c.ConstantPool)
+		f.Attributes, err = readAttributes(p, c.ConstantPool)
 		if err != nil {
 			return err
 		}
@@ -363,7 +363,7 @@ func (p *Parser) readMethods(c *Classfile) error {
 		if err != nil {
 			return err
 		}
-		m.Attributes, err = p.readAttributes(c.ConstantPool)
+		m.Attributes, err = readAttributes(p, c.ConstantPool)
 		if err != nil {
 			return err
 		}
@@ -371,7 +371,7 @@ func (p *Parser) readMethods(c *Classfile) error {
 	return nil
 }
 
-func (p *Parser) readAttributes(c *ConstantPool) ([]Attribute, error) {
+func readAttributes(p BinaryParser, c *ConstantPool) ([]Attribute, error) {
 	count, err := p.ReadUint16()
 	if err != nil {
 		return nil, err
@@ -379,34 +379,30 @@ func (p *Parser) readAttributes(c *ConstantPool) ([]Attribute, error) {
 	as := make([]Attribute, 0, count)
 	var i uint16
 	for ; i < count; i++ {
-		a, err := p.readAttribute(c)
+		attributeNameIndex, err := p.ReadUint16()
+		if err != nil {
+			return nil, err
+		}
+		attributeLength, err := p.ReadUint32()
+		if err != nil {
+			return nil, err
+		}
+		u := c.LookupUtf8(attributeNameIndex)
+		if u == nil {
+			return nil, fmt.Errorf("attribute name index is invalid: index:%d", attributeNameIndex)
+		}
+		bs, err := p.ReadBytes(int(attributeLength))
+		if err != nil {
+			return nil, err
+		}
+		parser := NewBinaryParser(bytes.NewBuffer(bs))
+		a, err := readAttribute(parser, attributeLength, u.String())
 		if err != nil {
 			return nil, err
 		}
 		as = append(as, a)
 	}
 	return as, nil
-}
-
-func (p *Parser) readAttribute(constantPool *ConstantPool) (Attribute, error) {
-	attributeNameIndex, err := p.ReadUint16()
-	if err != nil {
-		return nil, err
-	}
-	attributeLength, err := p.ReadUint32()
-	if err != nil {
-		return nil, err
-	}
-	u := constantPool.LookupUtf8(attributeNameIndex)
-	if u == nil {
-		return nil, fmt.Errorf("attribute name index is invalid: index:%d", attributeNameIndex)
-	}
-	bs, err := p.ReadBytes(int(attributeLength))
-	if err != nil {
-		return nil, err
-	}
-	parser := NewBinaryParser(bytes.NewBuffer(bs))
-	return readAttribute(parser, attributeLength, u.String())
 }
 
 func readAttribute(p BinaryParser, attributeLength uint32, attributeName string) (Attribute, error) {
@@ -467,7 +463,20 @@ func readAttribute(p BinaryParser, attributeLength uint32, attributeName string)
 
 		return a, nil
 	case "StackMapTable":
-		goto notImplemented
+		numOfEntries, err := p.ReadUint16()
+		if err != nil {
+			return nil, err
+		}
+		a := &AttributeStackMapTable{}
+		var i uint16
+		for ; i < numOfEntries; i++ {
+			e, err := readStackMapFrame(p)
+			if err != nil {
+				return nil, err
+			}
+			a.Entries = append(a.Entries, e)
+		}
+		return a, nil
 	case "Exceptions":
 		exceptionCount, err := p.ReadUint16()
 		if err != nil {
@@ -937,8 +946,114 @@ func readAttribute(p BinaryParser, attributeLength uint32, attributeName string)
 		}
 		return a, nil
 	}
-notImplemented:
 	return nil, nil
+}
+
+func readStackMapFrame(parser BinaryParser) (StackMapFrame, error) {
+	frameType, err := parser.ReadUint8()
+	if err != nil {
+		return nil, err
+	}
+	switch {
+	case 0 <= frameType && frameType <= 63:
+		return &StackMapFrameSameFrame{FrameType: frameType}, nil
+	case 64 <= frameType && frameType <= 127:
+		f := &StackMapFrameSameLocals1StackItemFrame{
+			FrameType: frameType,
+		}
+		f.stack, err = readVerificationType(parser)
+		return f, err
+	case frameType == 247:
+		f := &StackMapFrameSameLocals1StackItemFrameExtended{
+			FrameType: frameType,
+		}
+		return f, nil
+	case 248 <= frameType && frameType <= 250:
+		f := &StackMapFrameChopFrame{FrameType: frameType}
+		f.OffsetDelta, err = parser.ReadUint16()
+		return f, err
+	case frameType == 251:
+		f := &StackMapFrameSameFrameExtended{FrameType: frameType}
+		f.OffsetDelta, err = parser.ReadUint16()
+		return f, err
+	case 252 <= frameType && frameType <= 254:
+		f := &StackMapFrameAppendFrame{FrameType: frameType}
+		f.OffsetDelta, err = parser.ReadUint16()
+		if err != nil {
+			return nil, err
+		}
+		for i := frameType - 251; i > 0; i-- {
+			vt, err := readVerificationType(parser)
+			if err != nil {
+				return nil, err
+			}
+			f.Locals = append(f.Locals, vt)
+		}
+		return f, nil
+	case frameType == 255:
+		f := &StackMapFrameFullFrame{}
+		f.OffsetDelta, err = parser.ReadUint16()
+		if err != nil {
+			return nil, err
+		}
+		numberOfLocals, err := parser.ReadUint16()
+		if err != nil {
+			return nil, err
+		}
+		var i uint16
+		for ; i < numberOfLocals; i++ {
+			vt, err := readVerificationType(parser)
+			if err != nil {
+				return nil, err
+			}
+			f.Locals = append(f.Locals, vt)
+		}
+		numberOfStacks, err := parser.ReadUint16()
+		if err != nil {
+			return nil, err
+		}
+		for i = 0; i < numberOfStacks; i++ {
+			vt, err := readVerificationType(parser)
+			if err != nil {
+				return nil, err
+			}
+			f.Stacks = append(f.Stacks, vt)
+		}
+		return f, nil
+	}
+	return nil, errors.New("Not supported frame type")
+}
+
+func readVerificationType(parser BinaryParser) (VerificationTypeInfo, error) {
+	tag, err := parser.ReadUint8()
+	if err != nil {
+		return nil, err
+	}
+	switch tag {
+	case 0:
+		return &VerificationTypeInfoTopVaribleInfo{}, nil
+	case 1:
+		return &VerificationTypeInfoIntegerVaribleInfo{}, nil
+	case 2:
+		return &VerificationTypeInfoFloatVaribleInfo{}, nil
+	case 5:
+		return &VerificationTypeInfoNullVaribleInfo{}, nil
+	case 6:
+		return &VerificationTypeInfoUninitializedThisVaribleInfo{}, nil
+	case 7:
+		i := &VerificationTypeInfoObjectVaribleInfo{}
+		i.CpoolIndex, err = parser.ReadUint16()
+		return i, err
+	case 8:
+		i := &VerificationTypeInfoUninitializedVaribleInfo{}
+		i.Offset, err = parser.ReadUint16()
+		return i, err
+	case 4:
+		return &VerificationTypeInfoLongVaribleInfo{}, nil
+	case 3:
+		return &VerificationTypeInfoDoubleVaribleInfo{}, nil
+	}
+	return nil, errors.New("Unsupported verification type info")
 }
 
 func readAnnotation(parser BinaryParser) (*Annotation, error) {
