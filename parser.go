@@ -662,13 +662,13 @@ func readAttribute(p BinaryParser, attributeLength uint32, attributeName string)
 		}
 		return a, nil
 	case "RuntimeVisibleParameterAnnotations":
-		numAnnotations, err := p.ReadUint16()
+		numParameters, err := p.ReadUint8()
 		if err != nil {
 			return nil, err
 		}
 		a := &AttributeRuntimeVisibleParameterAnnotations{}
-		var i uint16
-		for ; i < numAnnotations; i++ {
+		var i uint8
+		for ; i < numParameters; i++ {
 			annot, err := readParameterAnnotation(p)
 			if err != nil {
 				return nil, err
@@ -677,13 +677,13 @@ func readAttribute(p BinaryParser, attributeLength uint32, attributeName string)
 		}
 		return a, nil
 	case "RuntimeInvisibleParameterAnnotations":
-		numAnnotations, err := p.ReadUint16()
+		numParameters, err := p.ReadUint8()
 		if err != nil {
 			return nil, err
 		}
 		a := &AttributeRuntimeVisibleParameterAnnotations{}
-		var i uint16
-		for ; i < numAnnotations; i++ {
+		var i uint8
+		for ; i < numParameters; i++ {
 			annot, err := readParameterAnnotation(p)
 			if err != nil {
 				return nil, err
@@ -1088,6 +1088,10 @@ func readElementValuePair(parser BinaryParser) (*ElementValuePair, error) {
 	p := &ElementValuePair{}
 	var err error
 	p.ElementNameIndex, err = parser.ReadUint16()
+	if err != nil {
+		return nil, err
+	}
+	p.ElementValue, err = readElementValue(parser)
 	return p, err
 }
 

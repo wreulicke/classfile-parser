@@ -1,23 +1,31 @@
 package parser
 
 import (
-	"encoding/json"
+	"fmt"
 	"os"
+	"path/filepath"
+	"strings"
 	"testing"
 )
 
 func TestParse(t *testing.T) {
-	f, err := os.Open("./testdata/Test.class")
-	if err != nil {
-		t.Fatal(err)
-	}
-	p := New(f)
-	c, err := p.Parse()
-	if err != nil {
-		t.Error(err)
-	}
-	e := json.NewEncoder(os.Stdout)
-	e.SetIndent("", "  ")
-	e.Encode(c)
-	t.Error("test")
+	filepath.Walk("./testdata", func(path string, info os.FileInfo, err error) error {
+		if !strings.HasSuffix(path, ".class") {
+			return nil
+		}
+		t.Run(path, func(t *testing.T) {
+			fmt.Printf("============================== %s: start ===============================\n", path)
+			f, err := os.Open(path)
+			if err != nil {
+				t.Fatal(err)
+			}
+			p := New(f)
+			_, err = p.Parse()
+			if err != nil {
+				t.Error(path, err)
+			}
+			fmt.Printf("============================== %s: end ===============================\n", path)
+		})
+		return nil
+	})
 }
