@@ -635,15 +635,91 @@ func readAttribute(p *BinaryParser, attributeLength uint32, attributeName string
 		}
 		return a, nil
 	case "RuntimeVisibleTypeAnnotations":
-		goto notImplemented
+		numAnnotations, err := p.readUint16()
+		if err != nil {
+			return nil, err
+		}
+		a := &AttributeRuntimeVisibleTypeAnnotations{}
+		var i uint16
+		for ; i < numAnnotations; i++ {
+			annot, err := readTypeAnnotation(p)
+			if err != nil {
+				return nil, err
+			}
+			a.TypeAnnotations = append(a.TypeAnnotations, annot)
+		}
+		return a, nil
 	case "RuntimeInvisibleTypeAnnotations":
-		goto notImplemented
+		numAnnotations, err := p.readUint16()
+		if err != nil {
+			return nil, err
+		}
+		a := &AttributeRuntimeInvisibleTypeAnnotations{}
+		var i uint16
+		for ; i < numAnnotations; i++ {
+			annot, err := readTypeAnnotation(p)
+			if err != nil {
+				return nil, err
+			}
+			a.TypeAnnotations = append(a.TypeAnnotations, annot)
+		}
+		return a, nil
 	case "AnnotationDefault":
-		goto notImplemented
+		value, err := readElementValue(p)
+		if err != nil {
+			return nil, err
+		}
+		return &AttributeAnnotationDefault{
+			DefaultValue: value,
+		}, nil
 	case "BoostrapMethods":
-		goto notImplemented
+		numBootstrapMethods, err := p.readUint16()
+		if err != nil {
+			return nil, err
+		}
+		attribute := &AttributeBootstrapMethods{}
+		var i uint16
+		for ; i < numBootstrapMethods; i++ {
+			b := &BootstrapMethod{}
+			b.BootstrapMethodRef, err = p.readUint16()
+			if err != nil {
+				return nil, err
+			}
+			numBootstrapArguments, err := p.readUint16()
+			if err != nil {
+				return nil, err
+			}
+			var j uint16
+			for ; j < numBootstrapArguments; j++ {
+				a, err := p.readUint16()
+				if err != nil {
+					return nil, err
+				}
+				b.BootstrapArguments = append(b.BootstrapArguments, a)
+			}
+			attribute.BootstrapMethods = append(attribute.BootstrapMethods, b)
+		}
+		return attribute, nil
 	case "MethodParameters":
-		goto notImplemented
+		parametersCount, err := p.readUint8()
+		if err != nil {
+			return nil, err
+		}
+		a := &AttributeMethodParameters{}
+		var i uint8
+		for ; i < parametersCount; i++ {
+			param := &MethodParameter{}
+			param.NameIndex, err = p.readUint16()
+			if err != nil {
+				return nil, err
+			}
+			param.AccessFlags, err = p.readUint16()
+			if err != nil {
+				return nil, err
+			}
+			a.Parameters = append(a.Parameters, param)
+		}
+		return a, nil
 	case "Module":
 		goto notImplemented
 	case "ModulePackage":
@@ -696,20 +772,32 @@ func readAnnotation(parser *BinaryParser) (*Annotation, error) {
 	if err != nil {
 		return nil, err
 	}
+	a.ElementValuePairs, err = readElementValuePairs(parser)
+	return a, err
+}
+
+func readElementValuePairs(parser *BinaryParser) ([]*ElementValuePair, error) {
 	numElementValuePair, err := parser.readUint16()
 	if err != nil {
 		return nil, err
 	}
+	pairs := make([]*ElementValuePair, 0, numElementValuePair)
 	var i uint16
 	for ; i < numElementValuePair; i++ {
-		p := &ElementValuePair{}
-		p.ElementNameIndex, err = parser.readUint16()
+		p, err := readElementValuePair(parser)
 		if err != nil {
 			return nil, err
 		}
-		a.ElementValuePairs = append(a.ElementValuePairs, p)
+		pairs = append(pairs, p)
 	}
-	return nil, err
+	return pairs, nil
+}
+
+func readElementValuePair(parser *BinaryParser) (*ElementValuePair, error) {
+	p := &ElementValuePair{}
+	var err error
+	p.ElementNameIndex, err = parser.readUint16()
+	return p, err
 }
 
 func readParameterAnnotation(parser *BinaryParser) (*ParameterAnnotation, error) {
@@ -727,6 +815,193 @@ func readParameterAnnotation(parser *BinaryParser) (*ParameterAnnotation, error)
 		a.Annotations = append(a.Annotations, annot)
 	}
 	return a, nil
+}
+
+func readTypeAnnotation(parser *BinaryParser) (*TypeAnnotation, error) {
+	a := &TypeAnnotation{}
+	targetType, err := parser.readUint8()
+	if err != nil {
+		return nil, err
+	}
+	switch targetType {
+	case 0x00:
+		a.TargetInfo, err = readTypeParameterTarget(parser)
+	case 0x01:
+		a.TargetInfo, err = readTypeParameterTarget(parser)
+	case 0x10:
+		a.TargetInfo, err = readSuperTypeTarget(parser)
+	case 0x11:
+		a.TargetInfo, err = readTypeParameterBoundTarget(parser)
+	case 0x12:
+		a.TargetInfo, err = readTypeParameterBoundTarget(parser)
+	case 0x13:
+		a.TargetInfo = &EmptyTarget{}
+	case 0x14:
+		a.TargetInfo = &EmptyTarget{}
+	case 0x15:
+		a.TargetInfo = &EmptyTarget{}
+	case 0x16:
+		a.TargetInfo, err = readFormalParameterTarget(parser)
+	case 0x17:
+		a.TargetInfo, err = readThrowsTarget(parser)
+	case 0x40:
+		a.TargetInfo, err = readLocalVarTarget(parser)
+	case 0x41:
+		a.TargetInfo, err = readLocalVarTarget(parser)
+	case 0x42:
+		a.TargetInfo, err = readCatchTarget(parser)
+	case 0x43:
+		a.TargetInfo, err = readOffsetTarget(parser)
+	case 0x44:
+		a.TargetInfo, err = readOffsetTarget(parser)
+	case 0x45:
+		a.TargetInfo, err = readOffsetTarget(parser)
+	case 0x46:
+		a.TargetInfo, err = readOffsetTarget(parser)
+	case 0x47:
+		a.TargetInfo, err = readTypeArgumentTarget(parser)
+	case 0x48:
+		a.TargetInfo, err = readTypeArgumentTarget(parser)
+	case 0x49:
+		a.TargetInfo, err = readTypeArgumentTarget(parser)
+	case 0x4A:
+		a.TargetInfo, err = readTypeArgumentTarget(parser)
+	case 0x4B:
+		a.TargetInfo, err = readTypeArgumentTarget(parser)
+	default:
+		return nil, fmt.Errorf("Unsupported target type for TypeAnnotation. tag: %d", targetType)
+	}
+	a.TargetPath, err = readTypePath(parser)
+	if err != nil {
+		return nil, err
+	}
+	a.TypeIndex, err = parser.readUint16()
+	if err != nil {
+		return nil, err
+	}
+	a.ElementValuePairs, err = readElementValuePairs(parser)
+	if err != nil {
+		return nil, err
+	}
+	return a, nil
+}
+
+func readTypeParameterTarget(parser *BinaryParser) (TargetInfo, error) {
+	target := &TypeParameterTarget{}
+	var err error
+	target.TypeParameterIndex, err = parser.readUint8()
+	return target, err
+}
+
+func readSuperTypeTarget(parser *BinaryParser) (TargetInfo, error) {
+	target := &SuperTypeTarget{}
+	var err error
+	target.SuperTypeIndex, err = parser.readUint16()
+	return target, err
+}
+
+func readTypeParameterBoundTarget(parser *BinaryParser) (TargetInfo, error) {
+	target := &TypeParameterBoundTarget{}
+	var err error
+	target.TypeParameterIndex, err = parser.readUint8()
+	if err != nil {
+		return nil, err
+	}
+	target.BoundIndex, err = parser.readUint8()
+	return target, err
+}
+
+func readFormalParameterTarget(parser *BinaryParser) (TargetInfo, error) {
+	target := &FormalParameterTarget{}
+	var err error
+	target.FormalParameterIndex, err = parser.readUint8()
+	return target, err
+}
+
+func readThrowsTarget(parser *BinaryParser) (TargetInfo, error) {
+	target := &ThrowsTarget{}
+	var err error
+	target.ThrowsTypeIndex, err = parser.readUint16()
+	return target, err
+}
+
+func readLocalVarTarget(parser *BinaryParser) (TargetInfo, error) {
+	target := &LocalVarTarget{}
+	tableLength, err := parser.readUint16()
+	if err != nil {
+		return nil, err
+	}
+	var i uint16
+	for ; i < tableLength; i++ {
+		table, err := readLocalVarTargetTable(parser)
+		if err != nil {
+			return nil, err
+		}
+		target.LocalVarTargetTables = append(target.LocalVarTargetTables, table)
+	}
+	return target, err
+}
+
+func readLocalVarTargetTable(parser *BinaryParser) (*LocalVarTargetTable, error) {
+	t := &LocalVarTargetTable{}
+	var err error
+	t.StartPc, err = parser.readUint16()
+	if err != nil {
+		return nil, err
+	}
+	t.Length, err = parser.readUint16()
+	if err != nil {
+		return nil, err
+	}
+	t.Index, err = parser.readUint16()
+	return t, err
+}
+
+func readCatchTarget(parser *BinaryParser) (TargetInfo, error) {
+	target := &CatchTarget{}
+	var err error
+	target.ExceptionTableIndex, err = parser.readUint16()
+	return target, err
+}
+
+func readOffsetTarget(parser *BinaryParser) (TargetInfo, error) {
+	target := &OffsetTarget{}
+	var err error
+	target.Offset, err = parser.readUint16()
+	return target, err
+}
+
+func readTypeArgumentTarget(parser *BinaryParser) (TargetInfo, error) {
+	target := &TypeArgumentTarget{}
+	var err error
+	target.Offset, err = parser.readUint16()
+	if err != nil {
+		return nil, err
+	}
+	target.TypeArgumentIndex, err = parser.readUint8()
+	return target, err
+}
+
+func readTypePath(parser *BinaryParser) (*TypePath, error) {
+	pathLength, err := parser.readUint8()
+	if err != nil {
+		return nil, err
+	}
+	typePath := &TypePath{}
+	var i uint8
+	for ; i < pathLength; i++ {
+		path := &Path{}
+		path.TypePathKind, err = parser.readUint8()
+		if err != nil {
+			return nil, err
+		}
+		path.TypeArgumentIndex, err = parser.readUint8()
+		if err != nil {
+			return nil, err
+		}
+		typePath.Paths = append(typePath.Paths, path)
+	}
+	return typePath, nil
 }
 
 func readElementValue(parser *BinaryParser) (*ElementValue, error) {

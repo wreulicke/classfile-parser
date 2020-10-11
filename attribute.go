@@ -163,6 +163,86 @@ type ParameterAnnotation struct {
 	Annotations []*Annotation
 }
 
+type AttributeRuntimeVisibleTypeAnnotations struct {
+	TypeAnnotations []*TypeAnnotation
+}
+
+func (a *AttributeRuntimeVisibleTypeAnnotations) Name() string {
+	return "RuntimeVisibleTypeAnnotations"
+}
+
+type AttributeRuntimeInvisibleTypeAnnotations struct {
+	TypeAnnotations []*TypeAnnotation
+}
+
+func (a *AttributeRuntimeInvisibleTypeAnnotations) Name() string {
+	return "RuntimeInvisibleTypeAnnotations"
+}
+
+type TypeAnnotation struct {
+	TargetType        uint8
+	TargetInfo        TargetInfo
+	TargetPath        *TypePath
+	TypeIndex         uint16
+	ElementValuePairs []*ElementValuePair
+}
+
+type TargetInfo interface{}
+
+type TypeParameterTarget struct {
+	TypeParameterIndex uint8
+}
+
+type SuperTypeTarget struct {
+	SuperTypeIndex uint16
+}
+
+type TypeParameterBoundTarget struct {
+	TypeParameterIndex uint8
+	BoundIndex         uint8
+}
+type EmptyTarget struct{}
+
+type FormalParameterTarget struct {
+	FormalParameterIndex uint8
+}
+
+type ThrowsTarget struct {
+	ThrowsTypeIndex uint16
+}
+
+type LocalVarTarget struct {
+	LocalVarTargetTables []*LocalVarTargetTable
+}
+
+type CatchTarget struct {
+	ExceptionTableIndex uint16
+}
+
+type OffsetTarget struct {
+	Offset uint16
+}
+
+type TypeArgumentTarget struct {
+	Offset            uint16
+	TypeArgumentIndex uint8
+}
+
+type LocalVarTargetTable struct {
+	StartPc uint16
+	Length  uint16
+	Index   uint16
+}
+
+type TypePath struct {
+	Paths []*Path
+}
+
+type Path struct {
+	TypePathKind      uint8
+	TypeArgumentIndex uint8
+}
+
 type Annotation struct {
 	TypeIndex         uint16
 	ElementValuePairs []*ElementValuePair
@@ -202,6 +282,40 @@ type ElementValueClassInfo struct {
 
 type ElementValueArrayValue struct {
 	Values []*ElementValue
+}
+
+type AttributeAnnotationDefault struct {
+	DefaultValue *ElementValue
+}
+
+func (a *AttributeAnnotationDefault) Name() string {
+	return "AnnotationDefault"
+}
+
+type AttributeBootstrapMethods struct {
+	BootstrapMethods []*BootstrapMethod
+}
+
+func (a *AttributeBootstrapMethods) Name() string {
+	return "BootstrapMethods"
+}
+
+type BootstrapMethod struct {
+	BootstrapMethodRef uint16
+	BootstrapArguments []uint16
+}
+
+type AttributeMethodParameters struct {
+	Parameters []*MethodParameter
+}
+
+func (a *AttributeMethodParameters) Name() string {
+	return "MethodParameters"
+}
+
+type MethodParameter struct {
+	NameIndex   uint16
+	AccessFlags uint16
 }
 
 type AttributeModulePackage struct {
