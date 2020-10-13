@@ -36,80 +36,6 @@ type Exception struct {
 	CatchType uint16
 }
 
-type AttributeStackMapTable struct {
-	Entries []StackMapFrame
-}
-
-func (a *AttributeStackMapTable) Name() string {
-	return "StackMapTable"
-}
-
-type StackMapFrame interface{}
-
-type StackMapFrameSameFrame struct {
-	FrameType uint8
-}
-
-type StackMapFrameSameLocals1StackItemFrame struct {
-	FrameType uint8
-	stack     VerificationTypeInfo
-}
-
-type StackMapFrameSameLocals1StackItemFrameExtended struct {
-	FrameType   uint8
-	OffsetDelta uint16
-	stack       VerificationTypeInfo
-}
-
-type StackMapFrameChopFrame struct {
-	FrameType   uint8
-	OffsetDelta uint16
-}
-
-type StackMapFrameSameFrameExtended struct {
-	FrameType   uint8
-	OffsetDelta uint16
-}
-
-type StackMapFrameAppendFrame struct {
-	FrameType   uint8
-	OffsetDelta uint16
-	Locals      []VerificationTypeInfo
-}
-
-type StackMapFrameFullFrame struct {
-	FrameType   uint8
-	OffsetDelta uint16
-	Locals      []VerificationTypeInfo
-	Stacks      []VerificationTypeInfo
-}
-
-type VerificationTypeInfo interface{}
-
-var (
-	_verificationTypeInfoTopVaribleInfo               = &VerificationTypeInfoDoubleVaribleInfo{}
-	_verificationTypeInfoIntegerVaribleInfo           = &VerificationTypeInfoIntegerVaribleInfo{}
-	_verificationTypeInfoFloatVaribleInfo             = &VerificationTypeInfoIntegerVaribleInfo{}
-	_verificationTypeInfoNullVaribleInfo              = &VerificationTypeInfoNullVaribleInfo{}
-	_verificationTypeInfoUninitializedThisVaribleInfo = &VerificationTypeInfoUninitializedThisVaribleInfo{}
-	_verificationTypeInfoLongVaribleInfo              = &VerificationTypeInfoLongVaribleInfo{}
-	_verificationTypeInfoDoubleVaribleInfo            = &VerificationTypeInfoDoubleVaribleInfo{}
-)
-
-type VerificationTypeInfoTopVaribleInfo struct{}
-type VerificationTypeInfoIntegerVaribleInfo struct{}
-type VerificationTypeInfoFloatVaribleInfo struct{}
-type VerificationTypeInfoNullVaribleInfo struct{}
-type VerificationTypeInfoUninitializedThisVaribleInfo struct{}
-type VerificationTypeInfoObjectVaribleInfo struct {
-	CpoolIndex uint16
-}
-type VerificationTypeInfoUninitializedVaribleInfo struct {
-	Offset uint16
-}
-type VerificationTypeInfoLongVaribleInfo struct{}
-type VerificationTypeInfoDoubleVaribleInfo struct{}
-
 type AttributeExceptions struct {
 	ExceptionIndexes []uint16
 }
@@ -352,35 +278,6 @@ type ElementValuePair struct {
 	ElementValue     ElementValue
 }
 
-type elementValue struct{}
-
-func (*elementValue) elementValueType() {}
-
-type ElementValue interface {
-	elementValueType()
-}
-
-type ElementValueConstValue struct {
-	elementValue
-	ConstValueIndex uint16
-}
-
-type ElementValueEnumConstValue struct {
-	elementValue
-	TypeNameIndex  uint16
-	ConstNameIndex uint16
-}
-
-type ElementValueClassInfo struct {
-	elementValue
-	ClassInfoIndex uint16
-}
-
-type ElementValueArrayValue struct {
-	elementValue
-	Values []ElementValue
-}
-
 type AttributeAnnotationDefault struct {
 	DefaultValue ElementValue
 }
@@ -413,60 +310,6 @@ func (a *AttributeMethodParameters) Name() string {
 type MethodParameter struct {
 	NameIndex   uint16
 	AccessFlags uint16
-}
-
-type AttributeModule struct {
-	ModuleNameIndex    uint16
-	ModuleFlags        uint16
-	ModuleVersionIndex uint16
-
-	Requires []*Require
-	Exports  []*Export
-	Opens    []*Open
-	Uses     []uint16
-	Provides []*Provide
-}
-
-func (*AttributeModule) Name() string {
-	return "Module"
-}
-
-type Require struct {
-	RequiresIndex        uint16
-	RequiresFlags        uint16
-	RequiresVersionIndex uint16
-}
-
-type Export struct {
-	ExportsIndex uint16
-	ExportsFlags uint16
-	ExportsTo    []uint16
-}
-type Open struct {
-	OpensIndex uint16
-	OpensFlags uint16
-	OpensTo    []uint16
-}
-
-type Provide struct {
-	ProvidesIndex uint16
-	ProvidesWith  []uint16
-}
-
-type AttributeModulePackage struct {
-	PackageIndexes []uint16
-}
-
-func (a *AttributeModulePackage) Name() string {
-	return "Module"
-}
-
-type AttributeModuleMainClass struct {
-	MainClassIndex uint16
-}
-
-func (a *AttributeModuleMainClass) Name() string {
-	return "ModuleMainClass"
 }
 
 type AttributeNestHost struct {
