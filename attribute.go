@@ -1,5 +1,10 @@
 package parser
 
+var (
+	deprecated = &AttributeDeprecated{}
+	synthetic  = &AttributeSynthetic{}
+)
+
 type Attribute interface {
 	Name() string
 }

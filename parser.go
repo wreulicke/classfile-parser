@@ -528,8 +528,7 @@ func readAttribute(p BinaryParser, attributeLength uint32, attributeName string)
 		a.MethodIndex, err = p.ReadUint16()
 		return a, err
 	case "Synthetic":
-		a := &AttributeSynthetic{}
-		return a, nil
+		return synthetic, nil
 	case "Signature":
 		a := &AttributeSignature{}
 		a.Signature, err = p.ReadUint16()
@@ -627,10 +626,7 @@ func readAttribute(p BinaryParser, attributeLength uint32, attributeName string)
 		}
 		return a, nil
 	case "Deprecated":
-		if attributeLength != 0 {
-			return nil, errors.New("Deprecated attribute length should be 2")
-		}
-		return &AttributeDeprecated{}, nil
+		return synthetic, nil
 	case "RuntimeVisibleAnnotations":
 		numAnnotations, err := p.ReadUint16()
 		if err != nil {
