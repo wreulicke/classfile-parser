@@ -342,48 +342,47 @@ type Path struct {
 }
 
 type Annotation struct {
+	elementValue
 	TypeIndex         uint16
 	ElementValuePairs []*ElementValuePair
 }
 
 type ElementValuePair struct {
 	ElementNameIndex uint16
-	ElementValue     *ElementValue
+	ElementValue     ElementValue
 }
 
-type ElementValue struct {
-	Tag uint8
+type elementValue struct{}
 
-	ConstValue *ElementValueConstValue
+func (*elementValue) elementValueType() {}
 
-	EnumConstValue *ElementValueEnumConstValue
-
-	ClassInfo *ElementValueClassInfo
-
-	AnnotationValue *Annotation
-
-	ArrayValue *ElementValueArrayValue
+type ElementValue interface {
+	elementValueType()
 }
 
 type ElementValueConstValue struct {
+	elementValue
 	ConstValueIndex uint16
 }
 
 type ElementValueEnumConstValue struct {
+	elementValue
 	TypeNameIndex  uint16
 	ConstNameIndex uint16
 }
 
 type ElementValueClassInfo struct {
+	elementValue
 	ClassInfoIndex uint16
 }
 
 type ElementValueArrayValue struct {
-	Values []*ElementValue
+	elementValue
+	Values []ElementValue
 }
 
 type AttributeAnnotationDefault struct {
-	DefaultValue *ElementValue
+	DefaultValue ElementValue
 }
 
 func (a *AttributeAnnotationDefault) Name() string {

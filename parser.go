@@ -1295,44 +1295,42 @@ func readTypePath(parser BinaryParser) (*TypePath, error) {
 	return typePath, nil
 }
 
-func readElementValue(parser BinaryParser) (*ElementValue, error) {
+func readElementValue(parser BinaryParser) (ElementValue, error) {
 	tag, err := parser.ReadUint8()
 	if err != nil {
 		return nil, err
 	}
-	ev := &ElementValue{}
 	switch tag {
 	case 'B':
-		ev.ConstValue, err = readElementValueConst(parser)
+		return readElementValueConst(parser)
 	case 'C':
-		ev.ConstValue, err = readElementValueConst(parser)
+		return readElementValueConst(parser)
 	case 'F':
-		ev.ConstValue, err = readElementValueConst(parser)
+		return readElementValueConst(parser)
 	case 'I':
-		ev.ConstValue, err = readElementValueConst(parser)
+		return readElementValueConst(parser)
 	case 'J':
-		ev.ConstValue, err = readElementValueConst(parser)
+		return readElementValueConst(parser)
 	case 'S':
-		ev.ConstValue, err = readElementValueConst(parser)
+		return readElementValueConst(parser)
 	case 'Z':
-		ev.ConstValue, err = readElementValueConst(parser)
+		return readElementValueConst(parser)
 	case 's':
-		ev.ConstValue, err = readElementValueConst(parser)
+		return readElementValueConst(parser)
 	case 'e':
-		ev.EnumConstValue, err = readElementValueEnumConst(parser)
+		return readElementValueEnumConst(parser)
 	case 'c':
-		ev.ClassInfo, err = readElementClassInfo(parser)
+		return readElementClassInfo(parser)
 	case '@':
-		ev.AnnotationValue, err = readAnnotation(parser)
+		return readAnnotation(parser)
 	case '[':
-		ev.ArrayValue, err = readElementArrayValue(parser)
+		return readElementArrayValue(parser)
 	default:
-		err = errors.New("Unsupported tag for element value")
+		return nil, errors.New("Unsupported tag for element value")
 	}
-	return ev, err
 }
 
-func readElementValueConst(parser BinaryParser) (*ElementValueConstValue, error) {
+func readElementValueConst(parser BinaryParser) (ElementValue, error) {
 	e := &ElementValueConstValue{}
 	var err error
 	e.ConstValueIndex, err = parser.ReadUint16()
