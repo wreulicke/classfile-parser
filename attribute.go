@@ -86,6 +86,16 @@ type StackMapFrameFullFrame struct {
 
 type VerificationTypeInfo interface{}
 
+var (
+	_verificationTypeInfoTopVaribleInfo               = &VerificationTypeInfoDoubleVaribleInfo{}
+	_verificationTypeInfoIntegerVaribleInfo           = &VerificationTypeInfoIntegerVaribleInfo{}
+	_verificationTypeInfoFloatVaribleInfo             = &VerificationTypeInfoIntegerVaribleInfo{}
+	_verificationTypeInfoNullVaribleInfo              = &VerificationTypeInfoNullVaribleInfo{}
+	_verificationTypeInfoUninitializedThisVaribleInfo = &VerificationTypeInfoUninitializedThisVaribleInfo{}
+	_verificationTypeInfoLongVaribleInfo              = &VerificationTypeInfoLongVaribleInfo{}
+	_verificationTypeInfoDoubleVaribleInfo            = &VerificationTypeInfoDoubleVaribleInfo{}
+)
+
 type VerificationTypeInfoTopVaribleInfo struct{}
 type VerificationTypeInfoIntegerVaribleInfo struct{}
 type VerificationTypeInfoFloatVaribleInfo struct{}

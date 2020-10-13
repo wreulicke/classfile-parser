@@ -1027,15 +1027,15 @@ func readVerificationType(parser BinaryParser) (VerificationTypeInfo, error) {
 	}
 	switch tag {
 	case 0:
-		return &VerificationTypeInfoTopVaribleInfo{}, nil
+		return _verificationTypeInfoTopVaribleInfo, nil
 	case 1:
-		return &VerificationTypeInfoIntegerVaribleInfo{}, nil
+		return _verificationTypeInfoIntegerVaribleInfo, nil
 	case 2:
-		return &VerificationTypeInfoFloatVaribleInfo{}, nil
+		return _verificationTypeInfoFloatVaribleInfo, nil
 	case 5:
-		return &VerificationTypeInfoNullVaribleInfo{}, nil
+		return _verificationTypeInfoNullVaribleInfo, nil
 	case 6:
-		return &VerificationTypeInfoUninitializedThisVaribleInfo{}, nil
+		return _verificationTypeInfoUninitializedThisVaribleInfo, nil
 	case 7:
 		i := &VerificationTypeInfoObjectVaribleInfo{}
 		i.CpoolIndex, err = parser.ReadUint16()
@@ -1045,9 +1045,9 @@ func readVerificationType(parser BinaryParser) (VerificationTypeInfo, error) {
 		i.Offset, err = parser.ReadUint16()
 		return i, err
 	case 4:
-		return &VerificationTypeInfoLongVaribleInfo{}, nil
+		return _verificationTypeInfoLongVaribleInfo, nil
 	case 3:
-		return &VerificationTypeInfoDoubleVaribleInfo{}, nil
+		return _verificationTypeInfoDoubleVaribleInfo, nil
 	}
 	return nil, errors.New("Unsupported verification type info")
 }
