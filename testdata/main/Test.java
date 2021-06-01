@@ -22,7 +22,7 @@ class Test{
     @Annot
     class Nested {}
 
-    record Point(int x, int y) { }
+    record Point(@Annot int x, int y) { }
 }
 
 class TypeParameter<@Annot T> extends @Annot Test {
