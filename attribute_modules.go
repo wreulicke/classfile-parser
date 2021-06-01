@@ -38,11 +38,11 @@ type Provide struct {
 	ProvidesWith  []uint16
 }
 
-type AttributeModulePackage struct {
+type AttributeModulePackages struct {
 	PackageIndexes []uint16
 }
 
-func (a *AttributeModulePackage) Name() string {
+func (a *AttributeModulePackages) Name() string {
 	return "Module"
 }
 

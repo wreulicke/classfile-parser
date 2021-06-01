@@ -903,12 +903,12 @@ func readAttribute(p BinaryParser, attributeLength uint32, attributeName string)
 		}
 
 		return a, nil
-	case "ModulePackage":
+	case "ModulePackages":
 		packageCount, err := p.ReadUint16()
 		if err != nil {
 			return nil, err
 		}
-		a := &AttributeModulePackage{PackageIndexes: make([]uint16, 0, packageCount)}
+		a := &AttributeModulePackages{PackageIndexes: make([]uint16, 0, packageCount)}
 		var i uint16
 		for ; i < packageCount; i++ {
 			packageIndex, err := p.ReadUint16()
