@@ -951,7 +951,7 @@ func readStackMapFrame(parser BinaryParser) (StackMapFrame, error) {
 		return nil, err
 	}
 	switch {
-	case 0 <= frameType && frameType <= 63:
+	case frameType <= 63:
 		return &StackMapFrameSameFrame{FrameType: frameType}, nil
 	case 64 <= frameType && frameType <= 127:
 		f := &StackMapFrameSameLocals1StackItemFrame{
@@ -1161,6 +1161,9 @@ func readTypeAnnotation(parser BinaryParser) (*TypeAnnotation, error) {
 		a.TargetInfo, err = readTypeArgumentTarget(parser)
 	default:
 		return nil, fmt.Errorf("Unsupported target type for TypeAnnotation. tag: %d", targetType)
+	}
+	if err != nil {
+		return nil, err
 	}
 	a.TargetPath, err = readTypePath(parser)
 	if err != nil {
