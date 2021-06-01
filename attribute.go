@@ -327,3 +327,17 @@ type AttributeNestMembers struct {
 func (a *AttributeNestMembers) Name() string {
 	return "NestHost"
 }
+
+type AttributeRecord struct {
+	Components []RecordComponentInfo
+}
+
+func (a *AttributeRecord) Name() string {
+	return "Record"
+}
+
+type RecordComponentInfo struct {
+	NameIndex       uint16
+	DescriptorIndex uint16
+	Attributes      []Attribute
+}

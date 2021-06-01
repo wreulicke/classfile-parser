@@ -396,7 +396,7 @@ func readAttributes(p BinaryParser, c *ConstantPool) ([]Attribute, error) {
 			return nil, err
 		}
 		parser := NewBinaryParser(bytes.NewBuffer(bs))
-		a, err := readAttribute(parser, attributeLength, u.String())
+		a, err := readAttribute(parser, attributeLength, u.String(), c)
 		if err != nil {
 			return nil, err
 		}
@@ -405,7 +405,7 @@ func readAttributes(p BinaryParser, c *ConstantPool) ([]Attribute, error) {
 	return as, nil
 }
 
-func readAttribute(p BinaryParser, attributeLength uint32, attributeName string) (Attribute, error) {
+func readAttribute(p BinaryParser, attributeLength uint32, attributeName string, constantPool *ConstantPool) (Attribute, error) {
 	var err error
 	switch attributeName {
 	case "ConstantValue":
@@ -941,8 +941,40 @@ func readAttribute(p BinaryParser, attributeLength uint32, attributeName string)
 			a.Classes = append(a.Classes, class)
 		}
 		return a, nil
+	case "Record":
+		a := &AttributeRecord{}
+		componentsCount, err := p.ReadUint16()
+		if err != nil {
+			return nil, err
+		}
+		var i uint16
+		for ; i < componentsCount; i++ {
+			ci, err := readRecordComponentInfo(p, constantPool)
+			if err != nil {
+				return nil, err
+			}
+			a.Components = append(a.Components, ci)
+		}
+		return a, nil
+	default:
+		return nil, errors.New("Unknown attributes:" + attributeName)
 	}
 	return nil, nil
+}
+
+func readRecordComponentInfo(parser BinaryParser, c *ConstantPool) (RecordComponentInfo, error) {
+	i := RecordComponentInfo{}
+	var err error
+	i.NameIndex, err = parser.ReadUint16()
+	if err != nil {
+		return i, err
+	}
+	i.DescriptorIndex, err = parser.ReadUint16()
+	if err != nil {
+		return i, err
+	}
+	i.Attributes, err = readAttributes(parser, c)
+	return i, err
 }
 
 func readStackMapFrame(parser BinaryParser) (StackMapFrame, error) {
