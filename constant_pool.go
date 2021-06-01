@@ -5,10 +5,10 @@ type ConstantPool struct {
 }
 
 func (c *ConstantPool) LookupUtf8(index uint16) *ConstantUtf8 {
-	i := index - 1
+	var i int = int(index) - 1
 	if i < 0 {
 		return nil
-	} else if i > uint16(len(c.Constants)) {
+	} else if i > len(c.Constants) {
 		return nil
 	}
 	found := c.Constants[i]
