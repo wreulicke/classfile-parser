@@ -725,7 +725,7 @@ func readAttribute(p BinaryParser, attributeLength uint32, attributeName string)
 		return &AttributeAnnotationDefault{
 			DefaultValue: value,
 		}, nil
-	case "BoostrapMethods":
+	case "BootstrapMethods":
 		numBootstrapMethods, err := p.ReadUint16()
 		if err != nil {
 			return nil, err
