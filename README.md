@@ -1,4 +1,4 @@
 
 # classfile-parser
 
-This is classfile-parser for JVM, written in pure Go.
+This is Java classfile parser, written in pure Go.
