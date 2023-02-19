@@ -9,6 +9,9 @@ import java.lang.annotation.Target;
 @Deprecated
 class Test{
 
+    public static final int CONSTANT = 0;
+    private final String x = "test";
+
     @Deprecated
     @Annot
     public static void main(@Annot String[] args) throws @Annot Exception {
