@@ -13,10 +13,10 @@ type Classfile struct {
 	Attributes   []Attribute
 }
 
-func (c *Classfile) ReadThisClass() (string, error) {
+func (c *Classfile) ThisClassName() (string, error) {
 	return c.ConstantPool.GetClassName(c.ThisClass)
 }
 
-func (c *Classfile) ReadSuperClass() (string, error) {
+func (c *Classfile) SuperClassName() (string, error) {
 	return c.ConstantPool.GetClassName(c.SuperClass)
 }

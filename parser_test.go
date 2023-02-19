@@ -10,6 +10,15 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func parseFile(path string) (*Classfile, error) {
+	f, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	p := New(f)
+	return p.Parse()
+}
+
 func TestParse(t *testing.T) {
 	filepath.Walk("./testdata", func(path string, info os.FileInfo, err error) error {
 		if !strings.HasSuffix(path, ".class") {
@@ -27,9 +36,9 @@ func TestParse(t *testing.T) {
 				t.Error(path, err)
 			}
 			if !strings.HasSuffix(path, "module-info.class") {
-				_, err = cf.ReadThisClass()
+				_, err = cf.ThisClassName()
 				assert.NoError(t, err)
-				_, err = cf.ReadSuperClass()
+				_, err = cf.SuperClassName()
 				assert.NoError(t, err)
 			}
 			fmt.Printf("============================== %s: end ===============================\n", path)
