@@ -113,15 +113,15 @@ type LineNumber struct {
 	LineNumber uint16
 }
 
-type AttributeLocalVaribleTable struct {
-	LocalVaribleTable []*LocalVarible
+type AttributeLocalVariableTable struct {
+	LocalVaribleTable []*LocalVariable
 }
 
-func (a *AttributeLocalVaribleTable) Name() string {
-	return "LocalVaribleTable"
+func (a *AttributeLocalVariableTable) Name() string {
+	return "LocalVariableTable"
 }
 
-type LocalVarible struct {
+type LocalVariable struct {
 	StartPc         uint16
 	Length          uint16
 	NameIndex       uint16
@@ -129,15 +129,15 @@ type LocalVarible struct {
 	Index           uint16
 }
 
-type AttributeLocalVaribleTypeTable struct {
-	LocalVaribleTypeTable []*LocalVaribleType
+type AttributeLocalVariableTypeTable struct {
+	LocalVaribleTypeTable []*LocalVariableType
 }
 
-func (a *AttributeLocalVaribleTypeTable) Name() string {
-	return "LocalVaribleTypeTable"
+func (a *AttributeLocalVariableTypeTable) Name() string {
+	return "LocalVariableTypeTable"
 }
 
-type LocalVaribleType struct {
+type LocalVariableType struct {
 	StartPc        uint16
 	Length         uint16
 	NameIndex      uint16

@@ -553,10 +553,10 @@ func readAttribute(p BinaryParser, attributeLength uint32, attributeName string,
 		if err != nil {
 			return nil, err
 		}
-		a := &AttributeLocalVaribleTable{}
+		a := &AttributeLocalVariableTable{}
 		var i uint16
 		for ; i < localVaribleTableLength; i++ {
-			ln := &LocalVarible{}
+			ln := &LocalVariable{}
 			ln.StartPc, err = p.ReadUint16()
 			if err != nil {
 				return nil, err
@@ -585,10 +585,10 @@ func readAttribute(p BinaryParser, attributeLength uint32, attributeName string,
 		if err != nil {
 			return nil, err
 		}
-		a := &AttributeLocalVaribleTypeTable{}
+		a := &AttributeLocalVariableTypeTable{}
 		var i uint16
 		for ; i < localVaribleTypeLength; i++ {
-			ln := &LocalVaribleType{}
+			ln := &LocalVariableType{}
 			ln.StartPc, err = p.ReadUint16()
 			if err != nil {
 				return nil, err
