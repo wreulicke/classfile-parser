@@ -29,6 +29,60 @@ func (a *AttributeCode) Name() string {
 	return "Code"
 }
 
+func (a *AttributeCode) LineNumberTable() *AttributeLineNumberTable {
+	for _, e := range a.Attributes {
+		if attr, ok := e.(*AttributeLineNumberTable); ok {
+			return attr
+		}
+	}
+	return nil
+}
+
+func (a *AttributeCode) LocalVariableTable() *AttributeLocalVariableTable {
+	for _, e := range a.Attributes {
+		if attr, ok := e.(*AttributeLocalVariableTable); ok {
+			return attr
+		}
+	}
+	return nil
+}
+
+func (a *AttributeCode) LocalVariableTypeTable() *AttributeLocalVariableTypeTable {
+	for _, e := range a.Attributes {
+		if attr, ok := e.(*AttributeLocalVariableTypeTable); ok {
+			return attr
+		}
+	}
+	return nil
+}
+
+func (a *AttributeCode) StackMapTable() *AttributeStackMapTable {
+	for _, e := range a.Attributes {
+		if attr, ok := e.(*AttributeStackMapTable); ok {
+			return attr
+		}
+	}
+	return nil
+}
+
+func (a *AttributeCode) RuntimeVisibleTypeAnnotations() *AttributeRuntimeVisibleTypeAnnotations {
+	for _, e := range a.Attributes {
+		if attr, ok := e.(*AttributeRuntimeVisibleTypeAnnotations); ok {
+			return attr
+		}
+	}
+	return nil
+}
+
+func (a *AttributeCode) RuntimeInvisibleTypeAnnotations() *AttributeRuntimeInvisibleTypeAnnotations {
+	for _, e := range a.Attributes {
+		if attr, ok := e.(*AttributeRuntimeInvisibleTypeAnnotations); ok {
+			return attr
+		}
+	}
+	return nil
+}
+
 type Exception struct {
 	StartPc   uint16
 	EndPc     uint16
