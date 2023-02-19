@@ -626,7 +626,7 @@ func readAttribute(p BinaryParser, attributeLength uint32, attributeName string,
 		}
 		return a, nil
 	case "Deprecated":
-		return synthetic, nil
+		return deprecated, nil
 	case "RuntimeVisibleAnnotations":
 		numAnnotations, err := p.ReadUint16()
 		if err != nil {
