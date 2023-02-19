@@ -273,6 +273,14 @@ type Annotation struct {
 	ElementValuePairs []*ElementValuePair
 }
 
+func (a *Annotation) Type(c *ConstantPool) (string, error) {
+	typ, err := c.GetConstantUtf8(a.TypeIndex)
+	if err != nil {
+		return "", err
+	}
+	return typ.String(), nil
+}
+
 type ElementValuePair struct {
 	ElementNameIndex uint16
 	ElementValue     ElementValue
