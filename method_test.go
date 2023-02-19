@@ -26,7 +26,7 @@ func TestAnnotationDefault(t *testing.T) {
 
 	name, _ := m.Name(cf.ConstantPool)
 	assert.Equal(t, "value", name)
-	attr := m.AnnotationDefault(cf.ConstantPool)
+	attr := m.AnnotationDefault()
 	assert.NotNil(t, attr)
 
 	index := attr.DefaultValue.(*ElementValueConstValue).ConstValueIndex
