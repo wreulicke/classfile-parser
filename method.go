@@ -22,3 +22,12 @@ func (m *Method) Descriptor(c *ConstantPool) (string, error) {
 	}
 	return name.String(), nil
 }
+
+func (m *Method) AnnotationDefault(c *ConstantPool) *AttributeAnnotationDefault {
+	for _, e := range m.Attributes {
+		if attr, ok := e.(*AttributeAnnotationDefault); ok {
+			return attr
+		}
+	}
+	return nil
+}
