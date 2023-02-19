@@ -6,6 +6,8 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestParse(t *testing.T) {
@@ -20,9 +22,15 @@ func TestParse(t *testing.T) {
 				t.Fatal(err)
 			}
 			p := New(f)
-			_, err = p.Parse()
+			cf, err := p.Parse()
 			if err != nil {
 				t.Error(path, err)
+			}
+			if !strings.HasSuffix(path, "module-info.class") {
+				_, err = cf.ReadThisClass()
+				assert.NoError(t, err)
+				_, err = cf.ReadSuperClass()
+				assert.NoError(t, err)
 			}
 			fmt.Printf("============================== %s: end ===============================\n", path)
 		})
