@@ -1,8 +1,15 @@
 package parser
 
+import (
+	"errors"
+	"fmt"
+)
+
 type ConstantPool struct {
 	Constants []Constant
 }
+
+var ErrNotFoundConstant = errors.New("not found constant")
 
 func (c *ConstantPool) LookupUtf8(index uint16) *ConstantUtf8 {
 	var i int = int(index) - 1
@@ -16,6 +23,30 @@ func (c *ConstantPool) LookupUtf8(index uint16) *ConstantUtf8 {
 		return utf8
 	}
 	return nil
+}
+
+func (c *ConstantPool) GetConstantUtf8(index uint16) (*ConstantUtf8, error) {
+	var i int = int(index) - 1
+	if i < 0 || i > len(c.Constants) {
+		return nil, ErrNotFoundConstant
+	}
+	clazz, ok := c.Constants[i].(*ConstantUtf8)
+	if !ok {
+		return nil, fmt.Errorf("Unexpected constant. expected:ConstantUtf8, actual: %T", c.Constants[i])
+	}
+	return clazz, nil
+}
+
+func (c *ConstantPool) GetClassInfo(index uint16) (*ConstantClass, error) {
+	var i int = int(index) - 1
+	if i < 0 || i > len(c.Constants) {
+		return nil, ErrNotFoundConstant
+	}
+	clazz, ok := c.Constants[index].(*ConstantClass)
+	if !ok {
+		return nil, fmt.Errorf("Unexpected constant. expected:ConstantClass, actual: %T", c.Constants[i])
+	}
+	return clazz, nil
 }
 
 type Constant interface {
