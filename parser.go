@@ -946,7 +946,6 @@ func readAttribute(p BinaryParser, attributeLength uint32, attributeName string,
 	default:
 		return nil, errors.New("Unknown attributes:" + attributeName)
 	}
-	return nil, nil
 }
 
 func readRecordComponentInfo(parser BinaryParser, c *ConstantPool) (RecordComponentInfo, error) {

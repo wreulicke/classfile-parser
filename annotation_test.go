@@ -19,7 +19,7 @@ func TestAnnotation(t *testing.T) {
 	assert.Equal(t, "([Ljava/lang/String;)V", desc)
 	attr := findAttribute(m.Attributes, "RuntimeVisibleAnnotations").(*AttributeRuntimeVisibleAnnotations)
 	annot := attr.Annotations[1]
-	typ, err := annot.Type(cf.ConstantPool)
+	typ, _ := annot.Type(cf.ConstantPool)
 	assert.Equal(t, "Lmain/Annot;", typ)
 	assert.Empty(t, annot.ElementValuePairs)
 }
