@@ -42,7 +42,7 @@ func (c *ConstantPool) GetClassInfo(index uint16) (*ConstantClass, error) {
 	if i < 0 || i > len(c.Constants) {
 		return nil, ErrNotFoundConstant
 	}
-	clazz, ok := c.Constants[index].(*ConstantClass)
+	clazz, ok := c.Constants[i].(*ConstantClass)
 	if !ok {
 		return nil, fmt.Errorf("Unexpected constant. expected:ConstantClass, actual: %T", c.Constants[i])
 	}
