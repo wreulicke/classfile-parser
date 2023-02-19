@@ -29,6 +29,60 @@ func (a *AttributeCode) Name() string {
 	return "Code"
 }
 
+func (a *AttributeCode) LineNumberTable() *AttributeLineNumberTable {
+	for _, e := range a.Attributes {
+		if attr, ok := e.(*AttributeLineNumberTable); ok {
+			return attr
+		}
+	}
+	return nil
+}
+
+func (a *AttributeCode) LocalVariableTable() *AttributeLocalVariableTable {
+	for _, e := range a.Attributes {
+		if attr, ok := e.(*AttributeLocalVariableTable); ok {
+			return attr
+		}
+	}
+	return nil
+}
+
+func (a *AttributeCode) LocalVariableTypeTable() *AttributeLocalVariableTypeTable {
+	for _, e := range a.Attributes {
+		if attr, ok := e.(*AttributeLocalVariableTypeTable); ok {
+			return attr
+		}
+	}
+	return nil
+}
+
+func (a *AttributeCode) StackMapTable() *AttributeStackMapTable {
+	for _, e := range a.Attributes {
+		if attr, ok := e.(*AttributeStackMapTable); ok {
+			return attr
+		}
+	}
+	return nil
+}
+
+func (a *AttributeCode) RuntimeVisibleTypeAnnotations() *AttributeRuntimeVisibleTypeAnnotations {
+	for _, e := range a.Attributes {
+		if attr, ok := e.(*AttributeRuntimeVisibleTypeAnnotations); ok {
+			return attr
+		}
+	}
+	return nil
+}
+
+func (a *AttributeCode) RuntimeInvisibleTypeAnnotations() *AttributeRuntimeInvisibleTypeAnnotations {
+	for _, e := range a.Attributes {
+		if attr, ok := e.(*AttributeRuntimeInvisibleTypeAnnotations); ok {
+			return attr
+		}
+	}
+	return nil
+}
+
 type Exception struct {
 	StartPc   uint16
 	EndPc     uint16
@@ -113,15 +167,15 @@ type LineNumber struct {
 	LineNumber uint16
 }
 
-type AttributeLocalVaribleTable struct {
-	LocalVaribleTable []*LocalVarible
+type AttributeLocalVariableTable struct {
+	LocalVaribleTable []*LocalVariable
 }
 
-func (a *AttributeLocalVaribleTable) Name() string {
-	return "LocalVaribleTable"
+func (a *AttributeLocalVariableTable) Name() string {
+	return "LocalVariableTable"
 }
 
-type LocalVarible struct {
+type LocalVariable struct {
 	StartPc         uint16
 	Length          uint16
 	NameIndex       uint16
@@ -129,15 +183,15 @@ type LocalVarible struct {
 	Index           uint16
 }
 
-type AttributeLocalVaribleTypeTable struct {
-	LocalVaribleTypeTable []*LocalVaribleType
+type AttributeLocalVariableTypeTable struct {
+	LocalVaribleTypeTable []*LocalVariableType
 }
 
-func (a *AttributeLocalVaribleTypeTable) Name() string {
-	return "LocalVaribleTypeTable"
+func (a *AttributeLocalVariableTypeTable) Name() string {
+	return "LocalVariableTypeTable"
 }
 
-type LocalVaribleType struct {
+type LocalVariableType struct {
 	StartPc        uint16
 	Length         uint16
 	NameIndex      uint16
@@ -271,6 +325,14 @@ type Annotation struct {
 	elementValue
 	TypeIndex         uint16
 	ElementValuePairs []*ElementValuePair
+}
+
+func (a *Annotation) Type(c *ConstantPool) (string, error) {
+	typ, err := c.GetConstantUtf8(a.TypeIndex)
+	if err != nil {
+		return "", err
+	}
+	return typ.String(), nil
 }
 
 type ElementValuePair struct {

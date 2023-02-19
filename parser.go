@@ -477,6 +477,7 @@ func readAttribute(p BinaryParser, attributeLength uint32, attributeName string,
 			}
 			a.ExceptionIndexes = append(a.ExceptionIndexes, exceptionIndex)
 		}
+		return a, nil
 	case "InnerClasses":
 		numberOfClasses, err := p.ReadUint16()
 		if err != nil {
@@ -552,10 +553,10 @@ func readAttribute(p BinaryParser, attributeLength uint32, attributeName string,
 		if err != nil {
 			return nil, err
 		}
-		a := &AttributeLocalVaribleTable{}
+		a := &AttributeLocalVariableTable{}
 		var i uint16
 		for ; i < localVaribleTableLength; i++ {
-			ln := &LocalVarible{}
+			ln := &LocalVariable{}
 			ln.StartPc, err = p.ReadUint16()
 			if err != nil {
 				return nil, err
@@ -584,10 +585,10 @@ func readAttribute(p BinaryParser, attributeLength uint32, attributeName string,
 		if err != nil {
 			return nil, err
 		}
-		a := &AttributeLocalVaribleTypeTable{}
+		a := &AttributeLocalVariableTypeTable{}
 		var i uint16
 		for ; i < localVaribleTypeLength; i++ {
-			ln := &LocalVaribleType{}
+			ln := &LocalVariableType{}
 			ln.StartPc, err = p.ReadUint16()
 			if err != nil {
 				return nil, err
@@ -945,7 +946,6 @@ func readAttribute(p BinaryParser, attributeLength uint32, attributeName string,
 	default:
 		return nil, errors.New("Unknown attributes:" + attributeName)
 	}
-	return nil, nil
 }
 
 func readRecordComponentInfo(parser BinaryParser, c *ConstantPool) (RecordComponentInfo, error) {
