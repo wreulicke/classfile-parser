@@ -16,43 +16,6 @@ func New(input io.Reader) *Parser {
 	return l
 }
 
-type Classfile struct {
-	MajorVersion uint16
-	MinorVersion uint16
-	ConstantPool *ConstantPool
-	AccessFlags  uint16
-	ThisClass    uint16
-	SuperClass   uint16
-	Interfaces   []uint16
-	Fields       []*Field
-	Methods      []*Method
-	Attributes   []Attribute
-}
-
-func (c *Classfile) ReadThisClass() (string, error) {
-	clazz, err := c.ConstantPool.GetClassInfo(c.ThisClass)
-	if err != nil {
-		return "", err
-	}
-	name, err := c.ConstantPool.GetConstantUtf8(clazz.NameIndex)
-	if err != nil {
-		return "", err
-	}
-	return name.String(), nil
-}
-
-func (c *Classfile) ReadSuperClass() (string, error) {
-	clazz, err := c.ConstantPool.GetClassInfo(c.SuperClass)
-	if err != nil {
-		return "", err
-	}
-	name, err := c.ConstantPool.GetConstantUtf8(clazz.NameIndex)
-	if err != nil {
-		return "", err
-	}
-	return name.String(), nil
-}
-
 func (p *Parser) Parse() (*Classfile, error) {
 	err := p.readCaffbabe()
 	if err != nil {

@@ -49,6 +49,22 @@ func (c *ConstantPool) GetClassInfo(index uint16) (*ConstantClass, error) {
 	return clazz, nil
 }
 
+func (c *ConstantPool) GetClassName(classNameIndex uint16) (string, error) {
+	var i int = int(classNameIndex)
+	if i < 1 || i > len(c.Constants) {
+		return "", ErrNotFoundConstant
+	}
+	clazz, err := c.GetClassInfo(classNameIndex)
+	if err != nil {
+		return "", err
+	}
+	name, err := c.GetConstantUtf8(clazz.NameIndex)
+	if err != nil {
+		return "", err
+	}
+	return name.String(), nil
+}
+
 type Constant interface {
 }
 
