@@ -9,7 +9,6 @@ import (
 
 type Parser struct {
 	BinaryParser
-	error error
 }
 
 func New(input io.Reader) *Parser {
@@ -995,7 +994,8 @@ func readStackMapFrame(parser BinaryParser) (StackMapFrame, error) {
 		f := &StackMapFrameSameLocals1StackItemFrameExtended{
 			FrameType: frameType,
 		}
-		return f, nil
+		f.stack, err = readVerificationType(parser)
+		return f, err
 	case 248 <= frameType && frameType <= 250:
 		f := &StackMapFrameChopFrame{FrameType: frameType}
 		f.OffsetDelta, err = parser.ReadUint16()
