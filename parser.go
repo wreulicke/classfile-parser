@@ -477,6 +477,7 @@ func readAttribute(p BinaryParser, attributeLength uint32, attributeName string,
 			}
 			a.ExceptionIndexes = append(a.ExceptionIndexes, exceptionIndex)
 		}
+		return a, nil
 	case "InnerClasses":
 		numberOfClasses, err := p.ReadUint16()
 		if err != nil {
