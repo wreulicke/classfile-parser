@@ -9,7 +9,6 @@ import (
 
 type Parser struct {
 	BinaryParser
-	error error
 }
 
 func New(input io.Reader) *Parser {
