@@ -5,14 +5,16 @@ import (
 	"errors"
 	"fmt"
 	"io"
+
+	"github.com/wreulicke/classfile-parser/binary"
 )
 
 type Parser struct {
-	BinaryParser
+	binary.Parser
 }
 
 func New(input io.Reader) *Parser {
-	l := &Parser{BinaryParser: NewBinaryParser(input)}
+	l := &Parser{Parser: binary.NewParser(input)}
 	return l
 }
 
@@ -357,7 +359,7 @@ func (p *Parser) readMethods(c *Classfile) error {
 	return nil
 }
 
-func readAttributes(p BinaryParser, c *ConstantPool) ([]Attribute, error) {
+func readAttributes(p binary.Parser, c *ConstantPool) ([]Attribute, error) {
 	count, err := p.ReadUint16()
 	if err != nil {
 		return nil, err
@@ -381,7 +383,7 @@ func readAttributes(p BinaryParser, c *ConstantPool) ([]Attribute, error) {
 		if err != nil {
 			return nil, err
 		}
-		parser := NewBinaryParser(bytes.NewBuffer(bs))
+		parser := Newbinary.Parser(bytes.NewBuffer(bs))
 		a, err := readAttribute(parser, attributeLength, u.String(), c)
 		if err != nil {
 			return nil, err
@@ -391,7 +393,7 @@ func readAttributes(p BinaryParser, c *ConstantPool) ([]Attribute, error) {
 	return as, nil
 }
 
-func readAttribute(p BinaryParser, attributeLength uint32, attributeName string, constantPool *ConstantPool) (Attribute, error) {
+func readAttribute(p binary.Parser, attributeLength uint32, attributeName string, constantPool *ConstantPool) (Attribute, error) {
 	var err error
 	switch attributeName {
 	case "ConstantValue":
@@ -948,7 +950,7 @@ func readAttribute(p BinaryParser, attributeLength uint32, attributeName string,
 	}
 }
 
-func readRecordComponentInfo(parser BinaryParser, c *ConstantPool) (RecordComponentInfo, error) {
+func readRecordComponentInfo(parser binary.Parser, c *ConstantPool) (RecordComponentInfo, error) {
 	i := RecordComponentInfo{}
 	var err error
 	i.NameIndex, err = parser.ReadUint16()
@@ -963,7 +965,7 @@ func readRecordComponentInfo(parser BinaryParser, c *ConstantPool) (RecordCompon
 	return i, err
 }
 
-func readStackMapFrame(parser BinaryParser) (StackMapFrame, error) {
+func readStackMapFrame(parser binary.Parser) (StackMapFrame, error) {
 	frameType, err := parser.ReadUint8()
 	if err != nil {
 		return nil, err
@@ -1039,7 +1041,7 @@ func readStackMapFrame(parser BinaryParser) (StackMapFrame, error) {
 	return nil, errors.New("Not supported frame type")
 }
 
-func readVerificationType(parser BinaryParser) (VerificationTypeInfo, error) {
+func readVerificationType(parser binary.Parser) (VerificationTypeInfo, error) {
 	tag, err := parser.ReadUint8()
 	if err != nil {
 		return nil, err
@@ -1071,7 +1073,7 @@ func readVerificationType(parser BinaryParser) (VerificationTypeInfo, error) {
 	return nil, errors.New("Unsupported verification type info")
 }
 
-func readAnnotation(parser BinaryParser) (*Annotation, error) {
+func readAnnotation(parser binary.Parser) (*Annotation, error) {
 	a := &Annotation{}
 	var err error
 	a.TypeIndex, err = parser.ReadUint16()
@@ -1082,7 +1084,7 @@ func readAnnotation(parser BinaryParser) (*Annotation, error) {
 	return a, err
 }
 
-func readElementValuePairs(parser BinaryParser) ([]*ElementValuePair, error) {
+func readElementValuePairs(parser binary.Parser) ([]*ElementValuePair, error) {
 	numElementValuePair, err := parser.ReadUint16()
 	if err != nil {
 		return nil, err
@@ -1099,7 +1101,7 @@ func readElementValuePairs(parser BinaryParser) ([]*ElementValuePair, error) {
 	return pairs, nil
 }
 
-func readElementValuePair(parser BinaryParser) (*ElementValuePair, error) {
+func readElementValuePair(parser binary.Parser) (*ElementValuePair, error) {
 	p := &ElementValuePair{}
 	var err error
 	p.ElementNameIndex, err = parser.ReadUint16()
@@ -1110,7 +1112,7 @@ func readElementValuePair(parser BinaryParser) (*ElementValuePair, error) {
 	return p, err
 }
 
-func readParameterAnnotation(parser BinaryParser) (*ParameterAnnotation, error) {
+func readParameterAnnotation(parser binary.Parser) (*ParameterAnnotation, error) {
 	a := &ParameterAnnotation{}
 	numAnnotations, err := parser.ReadUint16()
 	if err != nil {
@@ -1127,7 +1129,7 @@ func readParameterAnnotation(parser BinaryParser) (*ParameterAnnotation, error) 
 	return a, nil
 }
 
-func readTypeAnnotation(parser BinaryParser) (*TypeAnnotation, error) {
+func readTypeAnnotation(parser binary.Parser) (*TypeAnnotation, error) {
 	a := &TypeAnnotation{}
 	targetType, err := parser.ReadUint8()
 	if err != nil {
@@ -1199,21 +1201,21 @@ func readTypeAnnotation(parser BinaryParser) (*TypeAnnotation, error) {
 	return a, nil
 }
 
-func readTypeParameterTarget(parser BinaryParser) (TargetInfo, error) {
+func readTypeParameterTarget(parser binary.Parser) (TargetInfo, error) {
 	target := &TypeParameterTarget{}
 	var err error
 	target.TypeParameterIndex, err = parser.ReadUint8()
 	return target, err
 }
 
-func readSuperTypeTarget(parser BinaryParser) (TargetInfo, error) {
+func readSuperTypeTarget(parser binary.Parser) (TargetInfo, error) {
 	target := &SuperTypeTarget{}
 	var err error
 	target.SuperTypeIndex, err = parser.ReadUint16()
 	return target, err
 }
 
-func readTypeParameterBoundTarget(parser BinaryParser) (TargetInfo, error) {
+func readTypeParameterBoundTarget(parser binary.Parser) (TargetInfo, error) {
 	target := &TypeParameterBoundTarget{}
 	var err error
 	target.TypeParameterIndex, err = parser.ReadUint8()
@@ -1224,21 +1226,21 @@ func readTypeParameterBoundTarget(parser BinaryParser) (TargetInfo, error) {
 	return target, err
 }
 
-func readFormalParameterTarget(parser BinaryParser) (TargetInfo, error) {
+func readFormalParameterTarget(parser binary.Parser) (TargetInfo, error) {
 	target := &FormalParameterTarget{}
 	var err error
 	target.FormalParameterIndex, err = parser.ReadUint8()
 	return target, err
 }
 
-func readThrowsTarget(parser BinaryParser) (TargetInfo, error) {
+func readThrowsTarget(parser binary.Parser) (TargetInfo, error) {
 	target := &ThrowsTarget{}
 	var err error
 	target.ThrowsTypeIndex, err = parser.ReadUint16()
 	return target, err
 }
 
-func readLocalVarTarget(parser BinaryParser) (TargetInfo, error) {
+func readLocalVarTarget(parser binary.Parser) (TargetInfo, error) {
 	target := &LocalVarTarget{}
 	tableLength, err := parser.ReadUint16()
 	if err != nil {
@@ -1255,7 +1257,7 @@ func readLocalVarTarget(parser BinaryParser) (TargetInfo, error) {
 	return target, err
 }
 
-func readLocalVarTargetTable(parser BinaryParser) (*LocalVarTargetTable, error) {
+func readLocalVarTargetTable(parser binary.Parser) (*LocalVarTargetTable, error) {
 	t := &LocalVarTargetTable{}
 	var err error
 	t.StartPc, err = parser.ReadUint16()
@@ -1270,21 +1272,21 @@ func readLocalVarTargetTable(parser BinaryParser) (*LocalVarTargetTable, error) 
 	return t, err
 }
 
-func readCatchTarget(parser BinaryParser) (TargetInfo, error) {
+func readCatchTarget(parser binary.Parser) (TargetInfo, error) {
 	target := &CatchTarget{}
 	var err error
 	target.ExceptionTableIndex, err = parser.ReadUint16()
 	return target, err
 }
 
-func readOffsetTarget(parser BinaryParser) (TargetInfo, error) {
+func readOffsetTarget(parser binary.Parser) (TargetInfo, error) {
 	target := &OffsetTarget{}
 	var err error
 	target.Offset, err = parser.ReadUint16()
 	return target, err
 }
 
-func readTypeArgumentTarget(parser BinaryParser) (TargetInfo, error) {
+func readTypeArgumentTarget(parser binary.Parser) (TargetInfo, error) {
 	target := &TypeArgumentTarget{}
 	var err error
 	target.Offset, err = parser.ReadUint16()
@@ -1295,7 +1297,7 @@ func readTypeArgumentTarget(parser BinaryParser) (TargetInfo, error) {
 	return target, err
 }
 
-func readTypePath(parser BinaryParser) (*TypePath, error) {
+func readTypePath(parser binary.Parser) (*TypePath, error) {
 	pathLength, err := parser.ReadUint8()
 	if err != nil {
 		return nil, err
@@ -1317,7 +1319,7 @@ func readTypePath(parser BinaryParser) (*TypePath, error) {
 	return typePath, nil
 }
 
-func readElementValue(parser BinaryParser) (ElementValue, error) {
+func readElementValue(parser binary.Parser) (ElementValue, error) {
 	tag, err := parser.ReadUint8()
 	if err != nil {
 		return nil, err
@@ -1352,14 +1354,14 @@ func readElementValue(parser BinaryParser) (ElementValue, error) {
 	}
 }
 
-func readElementValueConst(parser BinaryParser) (ElementValue, error) {
+func readElementValueConst(parser binary.Parser) (ElementValue, error) {
 	e := &ElementValueConstValue{}
 	var err error
 	e.ConstValueIndex, err = parser.ReadUint16()
 	return e, err
 }
 
-func readElementValueEnumConst(parser BinaryParser) (*ElementValueEnumConstValue, error) {
+func readElementValueEnumConst(parser binary.Parser) (*ElementValueEnumConstValue, error) {
 	e := &ElementValueEnumConstValue{}
 	var err error
 	e.TypeNameIndex, err = parser.ReadUint16()
@@ -1370,14 +1372,14 @@ func readElementValueEnumConst(parser BinaryParser) (*ElementValueEnumConstValue
 	return e, err
 }
 
-func readElementClassInfo(parser BinaryParser) (*ElementValueClassInfo, error) {
+func readElementClassInfo(parser binary.Parser) (*ElementValueClassInfo, error) {
 	e := &ElementValueClassInfo{}
 	var err error
 	e.ClassInfoIndex, err = parser.ReadUint16()
 	return e, err
 }
 
-func readElementArrayValue(parser BinaryParser) (*ElementValueArrayValue, error) {
+func readElementArrayValue(parser binary.Parser) (*ElementValueArrayValue, error) {
 	e := &ElementValueArrayValue{}
 	numValues, err := parser.ReadUint16()
 	var i uint16
