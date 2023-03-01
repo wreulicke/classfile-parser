@@ -2,7 +2,6 @@ package code
 
 import (
 	"bytes"
-	"errors"
 	"fmt"
 	"io"
 
@@ -359,9 +358,84 @@ func (p *codeParser) parseMultianewarray(inst *Instruction) error {
 }
 
 func (p *codeParser) parseLookupSwitch(inst *Instruction) error {
-	return errors.New("not implemented")
+	var u uint8
+	var err error
+	// skip pad
+	for {
+		u, err = p.ReadUint8()
+		if err != nil {
+			return err
+		}
+		if u > 0 {
+			break
+		}
+	}
+
+	// read default
+	if err := p.take4Operand(inst); err != nil {
+		return err
+	}
+	npair, err := p.ReadUint32()
+	if err != nil {
+		return err
+	}
+	inst.operands = append(inst.operands, uint8(npair>>24))
+	inst.operands = append(inst.operands, uint8(npair>>16))
+	inst.operands = append(inst.operands, uint8(npair>>8))
+	inst.operands = append(inst.operands, uint8(npair))
+	for i := uint32(0); i < npair; i++ {
+		err := p.take4Operand(inst)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 func (p *codeParser) parseTableSwitch(inst *Instruction) error {
-	return errors.New("not implemented")
+	var u uint8
+	var err error
+	// skip pad
+	for {
+		u, err = p.ReadUint8()
+		if err != nil {
+			return err
+		}
+		if u > 0 {
+			break
+		}
+	}
+
+	// read default
+	if err := p.take4Operand(inst); err != nil {
+		return err
+	}
+	low, err := p.ReadUint32()
+	if err != nil {
+		return err
+	}
+	inst.operands = append(inst.operands, uint8(low>>24))
+	inst.operands = append(inst.operands, uint8(low>>16))
+	inst.operands = append(inst.operands, uint8(low>>8))
+	inst.operands = append(inst.operands, uint8(low))
+
+	high, err := p.ReadUint32()
+	if err != nil {
+		return err
+	}
+	inst.operands = append(inst.operands, uint8(high>>24))
+	inst.operands = append(inst.operands, uint8(high>>16))
+	inst.operands = append(inst.operands, uint8(high>>8))
+	inst.operands = append(inst.operands, uint8(high))
+
+	count := high - low + 1
+	for i := uint32(0); i < count; i++ {
+		err := p.take4Operand(inst)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
