@@ -221,7 +221,7 @@ func NewCodeParser(code []byte) CodeParser {
 	p.registerOpcodeParseFn(Lload_3, p.nop)
 	p.registerOpcodeParseFn(Lmul, p.nop)
 	p.registerOpcodeParseFn(Lneg, p.nop)
-	p.registerOpcodeParseFn(Lookupswitch, p.parseLookupSwitch) // TODO
+	p.registerOpcodeParseFn(Lookupswitch, p.parseLookupSwitch)
 	p.registerOpcodeParseFn(Lload_2, p.nop)
 	p.registerOpcodeParseFn(Lload_3, p.nop)
 	p.registerOpcodeParseFn(Lmul, p.nop)
@@ -256,7 +256,7 @@ func NewCodeParser(code []byte) CodeParser {
 	p.registerOpcodeParseFn(Sastore, p.nop)
 	p.registerOpcodeParseFn(Sipush, p.take2Operand)
 	p.registerOpcodeParseFn(Swap, p.nop)
-	p.registerOpcodeParseFn(Tableswitch, p.parseTableSwitch) // TODO
+	p.registerOpcodeParseFn(Tableswitch, p.parseTableSwitch)
 	return p
 }
 
