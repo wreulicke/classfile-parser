@@ -383,7 +383,7 @@ func readAttributes(p binary.Parser, c *ConstantPool) ([]Attribute, error) {
 		if err != nil {
 			return nil, err
 		}
-		parser := Newbinary.Parser(bytes.NewBuffer(bs))
+		parser := binary.NewParser(bytes.NewBuffer(bs))
 		a, err := readAttribute(parser, attributeLength, u.String(), c)
 		if err != nil {
 			return nil, err
