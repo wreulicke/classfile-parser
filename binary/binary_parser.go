@@ -1,4 +1,4 @@
-package parser
+package binary
 
 import (
 	"bufio"
@@ -8,11 +8,11 @@ import (
 	"math"
 )
 
-type binaryParser struct {
+type parser struct {
 	input *bufio.Reader
 }
 
-type BinaryParser interface {
+type Parser interface {
 	ReadBytes(size int) ([]byte, error)
 	ReadUint8() (uint8, error)
 	ReadUint16() (uint16, error)
@@ -22,15 +22,15 @@ type BinaryParser interface {
 	ReadDouble() (float64, error)
 }
 
-var _ BinaryParser = (*binaryParser)(nil)
+var _ Parser = (*parser)(nil)
 
-func NewBinaryParser(reader io.Reader) BinaryParser {
-	return &binaryParser{
+func NewParser(reader io.Reader) Parser {
+	return &parser{
 		input: bufio.NewReader(reader),
 	}
 }
 
-func (p *binaryParser) ReadBytes(size int) ([]byte, error) {
+func (p *parser) ReadBytes(size int) ([]byte, error) {
 	bs := make([]byte, size)
 	n, err := io.ReadFull(p.input, bs)
 	if n != size {
@@ -42,11 +42,11 @@ func (p *binaryParser) ReadBytes(size int) ([]byte, error) {
 	return bs, nil
 }
 
-func (p *binaryParser) ReadUint8() (uint8, error) {
+func (p *parser) ReadUint8() (uint8, error) {
 	return p.input.ReadByte()
 }
 
-func (p *binaryParser) ReadUint16() (uint16, error) {
+func (p *parser) ReadUint16() (uint16, error) {
 	bs, err := p.ReadBytes(2)
 	if err != nil {
 		return 0, err
@@ -54,7 +54,7 @@ func (p *binaryParser) ReadUint16() (uint16, error) {
 	return binary.BigEndian.Uint16(bs), nil
 }
 
-func (p *binaryParser) ReadUint32() (uint32, error) {
+func (p *parser) ReadUint32() (uint32, error) {
 	bs, err := p.ReadBytes(4)
 	if err != nil {
 		return 0, err
@@ -62,7 +62,7 @@ func (p *binaryParser) ReadUint32() (uint32, error) {
 	return binary.BigEndian.Uint32(bs), nil
 }
 
-func (p *binaryParser) ReadUint64() (uint64, error) {
+func (p *parser) ReadUint64() (uint64, error) {
 	bs, err := p.ReadBytes(8)
 	if err != nil {
 		return 0, err
@@ -70,7 +70,7 @@ func (p *binaryParser) ReadUint64() (uint64, error) {
 	return binary.BigEndian.Uint64(bs), nil
 }
 
-func (p *binaryParser) ReadFloat() (float32, error) {
+func (p *parser) ReadFloat() (float32, error) {
 	bytes, err := p.ReadUint32()
 	if err == nil {
 		return math.Float32frombits(bytes), nil
@@ -78,7 +78,7 @@ func (p *binaryParser) ReadFloat() (float32, error) {
 	return 0, err
 }
 
-func (p *binaryParser) ReadDouble() (float64, error) {
+func (p *parser) ReadDouble() (float64, error) {
 	bytes, err := p.ReadUint64()
 	if err == nil {
 		return math.Float64frombits(bytes), nil
