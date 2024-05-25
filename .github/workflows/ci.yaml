@@ -9,6 +9,7 @@ on:
   pull_request:
 permissions:
   contents: read
+  issues: write
 jobs:
   golangci:
     name: lint
