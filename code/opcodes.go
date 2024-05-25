@@ -3,7 +3,7 @@ package code
 type opcode uint8
 
 // Instruction set is here.
-// https://docs.oracle.com/javase/specs/jvms/se19/html/jvms-6.html#jvms-6.5
+// https://docs.oracle.com/javase/specs/jvms/se22/html/jvms-6.html#jvms-6.5
 const (
 	_               opcode = iota
 	Aaload                 = 50  // (0x32)
@@ -207,4 +207,5 @@ const (
 	Sipush                 = 17  // (0x11)
 	Swap                   = 95  // (0x5f)
 	Tableswitch            = 170 // (0xaa)
+	Wide                   = 196 // (0xc4)
 )

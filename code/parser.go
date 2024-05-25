@@ -257,6 +257,7 @@ func NewCodeParser(code []byte) CodeParser {
 	p.registerOpcodeParseFn(Sipush, p.take2Operand)
 	p.registerOpcodeParseFn(Swap, p.nop)
 	p.registerOpcodeParseFn(Tableswitch, p.parseTableSwitch)
+	p.registerOpcodeParseFn(Wide, p.parseWide)
 	return p
 }
 
@@ -438,4 +439,27 @@ func (p *codeParser) parseTableSwitch(inst *Instruction) error {
 	}
 
 	return nil
+}
+
+func (p *codeParser) parseWide(inst *Instruction) error {
+	b, err := p.ReadUint8()
+	if err != nil {
+		return err
+	}
+	// TODO: fix data structure for instruction
+	// Next is not actual operand, but added to operands here.
+	inst.operands = append(inst.operands, b)
+
+	switch opcode(b) {
+	case Iload, Fload, Aload, Lload, Dload, Istore, Fstore, Astore, Lstore, Dstore, Ret:
+		return p.take2Operand(inst)
+	case Iinc:
+		err := p.take2Operand(inst)
+		if err != nil {
+			return err
+		}
+		return p.take2Operand(inst)
+	default:
+		return fmt.Errorf("unknown opcode. %d", b)
+	}
 }
