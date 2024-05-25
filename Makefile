@@ -10,4 +10,5 @@ build-java:
 
 .PHONY: test
 test: build-java
-	go test ./...
+	mkdir -p build
+	go test ./... -v -race -coverprofile=build/coverage.out
