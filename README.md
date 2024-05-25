@@ -23,8 +23,11 @@ func main() {
 	}
 	// ...
 }
-
 ```
+
+## Supported Versions
+
+Java 22
 
 ## License
 
