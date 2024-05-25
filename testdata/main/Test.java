@@ -70,3 +70,13 @@ class TypeParameter<@Annot T> extends @Annot Test {
 @interface Annots {
     Annot[] value();
 }
+
+sealed interface Sealed permits SealedImpl {
+    void test();
+}
+
+final class SealedImpl implements Sealed {
+    public void test() {
+        System.out.println("test");
+    }
+}
