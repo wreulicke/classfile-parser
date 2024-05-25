@@ -29,6 +29,10 @@ func main() {
 
 Java 22
 
+## Notice
+
+Opcode parser is experimental.
+
 ## License
 
 * MIT
