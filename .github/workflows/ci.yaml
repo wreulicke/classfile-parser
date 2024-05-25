@@ -36,3 +36,5 @@ jobs:
       - uses: actions/checkout@v4
       - name: test
         run: make test
+      -
+        uses: k1LoW/octocov-action@v0
