@@ -945,6 +945,21 @@ func readAttribute(p binary.Parser, attributeLength uint32, attributeName string
 			a.Components = append(a.Components, ci)
 		}
 		return a, nil
+	case "PermittedSubclasses":
+		a := &AttributePermittedSubclasses{}
+		numberOfClasses, err := p.ReadUint16()
+		if err != nil {
+			return nil, err
+		}
+		var i uint16
+		for ; i < numberOfClasses; i++ {
+			classIndex, err := p.ReadUint16()
+			if err != nil {
+				return nil, err
+			}
+			a.Classes = append(a.Classes, classIndex)
+		}
+		return a, nil
 	default:
 		return nil, errors.New("Unknown attributes:" + attributeName)
 	}

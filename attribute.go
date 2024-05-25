@@ -410,3 +410,12 @@ type RecordComponentInfo struct {
 	DescriptorIndex uint16
 	Attributes      []Attribute
 }
+
+type AttributePermittedSubclasses struct {
+	NumberOfClasses uint16
+	Classes         []uint16
+}
+
+func (a *AttributePermittedSubclasses) Name() string {
+	return "PermittedSubclasses"
+}
