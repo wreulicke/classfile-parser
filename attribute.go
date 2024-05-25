@@ -1,5 +1,7 @@
 package parser
 
+import "github.com/wreulicke/classfile-parser/code"
+
 var (
 	deprecated = &AttributeDeprecated{}
 	synthetic  = &AttributeSynthetic{}
@@ -81,6 +83,11 @@ func (a *AttributeCode) RuntimeInvisibleTypeAnnotations() *AttributeRuntimeInvis
 		}
 	}
 	return nil
+}
+
+func (a *AttributeCode) ParseCode() ([]*code.Instruction, error) {
+	p := code.NewCodeParser(a.Codes)
+	return p.Parse()
 }
 
 type Exception struct {
@@ -402,4 +409,13 @@ type RecordComponentInfo struct {
 	NameIndex       uint16
 	DescriptorIndex uint16
 	Attributes      []Attribute
+}
+
+type AttributePermittedSubclasses struct {
+	NumberOfClasses uint16
+	Classes         []uint16
+}
+
+func (a *AttributePermittedSubclasses) Name() string {
+	return "PermittedSubclasses"
 }

@@ -1,7 +1,6 @@
 package parser
 
 import (
-	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -25,7 +24,7 @@ func TestParse(t *testing.T) {
 			return nil
 		}
 		t.Run(path, func(t *testing.T) {
-			fmt.Printf("============================== %s: start ===============================\n", path)
+			t.Logf("============================== %s: start ===============================\n", path)
 			f, err := os.Open(path)
 			if err != nil {
 				t.Fatal(err)
@@ -41,7 +40,7 @@ func TestParse(t *testing.T) {
 				_, err = cf.SuperClassName()
 				assert.NoError(t, err)
 			}
-			fmt.Printf("============================== %s: end ===============================\n", path)
+			t.Logf("============================== %s: end ===============================\n", path)
 		})
 		return nil
 	})
