@@ -2,3 +2,7 @@ comment:
 coverage:
   paths:
     - build/coverage.out
+summary:
+  if: true
+body:
+  if: is_pull_request
