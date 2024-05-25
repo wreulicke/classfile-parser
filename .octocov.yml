@@ -1,3 +1,4 @@
+comment:
 coverage:
   paths:
     - build/coverage.out
