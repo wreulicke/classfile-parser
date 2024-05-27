@@ -2,6 +2,7 @@ package code
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"io"
 
@@ -265,7 +266,7 @@ func (p *codeParser) Parse() ([]*Instruction, error) {
 	var instructions []*Instruction
 	for {
 		inst, err := p.parseInstruction()
-		if err == io.EOF {
+		if errors.Is(err, io.EOF) {
 			instructions = append(instructions, inst)
 			return instructions, nil
 		} else if err != nil {
@@ -282,7 +283,7 @@ func (p *codeParser) parseInstruction() (*Instruction, error) {
 	}
 	parse, ok := p.opcodeParseFns[opcode(b)]
 	if !ok {
-		return nil, fmt.Errorf("Unknown opcode. %d", b)
+		return nil, fmt.Errorf("unknown opcode. %d", b)
 	}
 	inst := &Instruction{
 		opcode: opcode(b),
