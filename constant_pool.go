@@ -12,7 +12,7 @@ type ConstantPool struct {
 var ErrNotFoundConstant = errors.New("not found constant")
 
 func (c *ConstantPool) LookupUtf8(index uint16) *ConstantUtf8 {
-	var i int = int(index) - 1
+	i := int(index) - 1
 	if i < 0 {
 		return nil
 	} else if i > len(c.Constants) {
@@ -26,7 +26,7 @@ func (c *ConstantPool) LookupUtf8(index uint16) *ConstantUtf8 {
 }
 
 func (c *ConstantPool) GetConstantUtf8(index uint16) (*ConstantUtf8, error) {
-	var i int = int(index) - 1
+	i := int(index) - 1
 	if i < 0 || i > len(c.Constants) {
 		return nil, ErrNotFoundConstant
 	}
@@ -38,7 +38,7 @@ func (c *ConstantPool) GetConstantUtf8(index uint16) (*ConstantUtf8, error) {
 }
 
 func (c *ConstantPool) GetClassInfo(index uint16) (*ConstantClass, error) {
-	var i int = int(index) - 1
+	i := int(index) - 1
 	if i < 0 || i > len(c.Constants) {
 		return nil, ErrNotFoundConstant
 	}
@@ -50,7 +50,7 @@ func (c *ConstantPool) GetClassInfo(index uint16) (*ConstantClass, error) {
 }
 
 func (c *ConstantPool) GetClassName(classNameIndex uint16) (string, error) {
-	var i int = int(classNameIndex)
+	i := int(classNameIndex)
 	if i < 1 || i > len(c.Constants) {
 		return "", ErrNotFoundConstant
 	}

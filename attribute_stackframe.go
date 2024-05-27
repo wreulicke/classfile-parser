@@ -70,6 +70,7 @@ type (
 		CpoolIndex uint16
 	}
 )
+
 type VerificationTypeInfoUninitializedVaribleInfo struct {
 	Offset uint16
 }

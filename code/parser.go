@@ -17,7 +17,7 @@ type codeParser struct {
 
 type opcodeParseFn func(*Instruction) error
 
-type CodeParser interface {
+type CodeParser interface { //nolint:revive
 	Parse() ([]*Instruction, error)
 }
 
@@ -295,7 +295,7 @@ func (p *codeParser) registerOpcodeParseFn(code opcode, fn opcodeParseFn) {
 	p.opcodeParseFns[code] = fn
 }
 
-func (p *codeParser) nop(inst *Instruction) error {
+func (p *codeParser) nop(_ *Instruction) error {
 	return nil
 }
 
@@ -352,10 +352,7 @@ func (p *codeParser) parseMultianewarray(inst *Instruction) error {
 	if err != nil {
 		return err
 	}
-	if err := p.take1Operand(inst); err != nil {
-		return err
-	}
-	return nil
+	return p.take1Operand(inst)
 }
 
 func (p *codeParser) parseLookupSwitch(inst *Instruction) error {
