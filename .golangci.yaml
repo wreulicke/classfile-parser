@@ -2,13 +2,15 @@ linters:
   enable-all: true
   disable:
     - wrapcheck # TODO fix
-    - goerr113 # TODO fix
+    - err113 # TODO fix
+    - testifylint # TODO fix
     - varnamelen
     - testpackage
     - nosnakecase
     - nonamedreturns
     - nlreturn
     - ireturn
+    - mnd
     - gomnd
     - ifshort
     - exhaustivestruct
@@ -31,6 +33,7 @@ linters:
     - maligned
     - funlen
     - golint
+    - execinquery
 
 issues:
   exclude-rules:
