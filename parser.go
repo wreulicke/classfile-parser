@@ -99,6 +99,7 @@ func (p *Parser) readConstantPool(c *Classfile) error {
 		if err != nil {
 			return err
 		}
+		// See https://docs.oracle.com/javase/specs/jvms/se22/html/jvms-4.html#jvms-4.4-210
 		switch tag {
 		case 7:
 			c := &ConstantClass{}
