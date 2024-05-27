@@ -1,5 +1,43 @@
+linters:
+  enable-all: true
+  disable:
+    - wrapcheck # TODO fix
+    - err113 # TODO fix
+    - testifylint # TODO fix
+    - varnamelen
+    - testpackage
+    - nosnakecase
+    - nonamedreturns
+    - nlreturn
+    - ireturn
+    - mnd
+    - gomnd
+    - ifshort
+    - exhaustivestruct
+    - exhaustruct
+    - goconst
+    - godox
+    - depguard
+    - wsl
+    - lll
+    - cyclop
+    - gocognit
+    - gocyclo
+    - maintidx
+    # deprecated linters
+    - deadcode
+    - interfacer
+    - scopelint
+    - varcheck
+    - structcheck
+    - maligned
+    - funlen
+    - golint
+    - execinquery
+
 issues:
   exclude-rules:
     - path: _test\.go
       linters:
         - errcheck
+        - forcetypeassert

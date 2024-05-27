@@ -3,8 +3,8 @@ package parser
 import "github.com/wreulicke/classfile-parser/code"
 
 var (
-	deprecated = &AttributeDeprecated{}
-	synthetic  = &AttributeSynthetic{}
+	deprecated = &AttributeDeprecated{} //nolint:gochecknoglobals
+	synthetic  = &AttributeSynthetic{}  //nolint:gochecknoglobals
 )
 
 type Attribute interface {

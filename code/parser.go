@@ -2,6 +2,7 @@ package code
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"io"
 
@@ -16,7 +17,7 @@ type codeParser struct {
 
 type opcodeParseFn func(*Instruction) error
 
-type CodeParser interface {
+type CodeParser interface { //nolint:revive
 	Parse() ([]*Instruction, error)
 }
 
@@ -265,7 +266,7 @@ func (p *codeParser) Parse() ([]*Instruction, error) {
 	var instructions []*Instruction
 	for {
 		inst, err := p.parseInstruction()
-		if err == io.EOF {
+		if errors.Is(err, io.EOF) {
 			instructions = append(instructions, inst)
 			return instructions, nil
 		} else if err != nil {
@@ -273,7 +274,6 @@ func (p *codeParser) Parse() ([]*Instruction, error) {
 		}
 		instructions = append(instructions, inst)
 	}
-
 }
 
 func (p *codeParser) parseInstruction() (*Instruction, error) {
@@ -283,7 +283,7 @@ func (p *codeParser) parseInstruction() (*Instruction, error) {
 	}
 	parse, ok := p.opcodeParseFns[opcode(b)]
 	if !ok {
-		return nil, fmt.Errorf("Unknown opcode. %d", b)
+		return nil, fmt.Errorf("unknown opcode. %d", b)
 	}
 	inst := &Instruction{
 		opcode: opcode(b),
@@ -295,7 +295,7 @@ func (p *codeParser) registerOpcodeParseFn(code opcode, fn opcodeParseFn) {
 	p.opcodeParseFns[code] = fn
 }
 
-func (p *codeParser) nop(inst *Instruction) error {
+func (p *codeParser) nop(_ *Instruction) error {
 	return nil
 }
 
@@ -352,10 +352,7 @@ func (p *codeParser) parseMultianewarray(inst *Instruction) error {
 	if err != nil {
 		return err
 	}
-	if err := p.take1Operand(inst); err != nil {
-		return err
-	}
-	return nil
+	return p.take1Operand(inst)
 }
 
 func (p *codeParser) parseLookupSwitch(inst *Instruction) error {

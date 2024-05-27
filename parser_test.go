@@ -19,7 +19,8 @@ func parseFile(path string) (*Classfile, error) {
 }
 
 func TestParse(t *testing.T) {
-	filepath.Walk("./testdata", func(path string, info os.FileInfo, err error) error {
+	t.Parallel()
+	filepath.Walk("./testdata", func(path string, _ os.FileInfo, _ error) error {
 		if !strings.HasSuffix(path, ".class") {
 			return nil
 		}

@@ -34,7 +34,7 @@ func (p *parser) ReadBytes(size int) ([]byte, error) {
 	bs := make([]byte, size)
 	n, err := io.ReadFull(p.input, bs)
 	if n != size {
-		return nil, fmt.Errorf("Cannot read %d bytes. got %d bytes", size, n)
+		return nil, fmt.Errorf("cannot read %d bytes. got %d bytes", size, n)
 	}
 	if err != nil {
 		return nil, err

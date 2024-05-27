@@ -7,6 +7,7 @@ import (
 )
 
 func TestReadMethodName(t *testing.T) {
+	t.Parallel()
 	cf, err := parseFile("./testdata/classes/main/Test.class")
 	assert.NoError(t, err)
 
@@ -19,6 +20,7 @@ func TestReadMethodName(t *testing.T) {
 }
 
 func TestAnnotationDefault(t *testing.T) {
+	t.Parallel()
 	cf, err := parseFile("./testdata/classes/main/Annot.class")
 	assert.NoError(t, err)
 

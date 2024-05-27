@@ -12,7 +12,7 @@ type ConstantPool struct {
 var ErrNotFoundConstant = errors.New("not found constant")
 
 func (c *ConstantPool) LookupUtf8(index uint16) *ConstantUtf8 {
-	var i int = int(index) - 1
+	i := int(index) - 1
 	if i < 0 {
 		return nil
 	} else if i > len(c.Constants) {
@@ -26,31 +26,31 @@ func (c *ConstantPool) LookupUtf8(index uint16) *ConstantUtf8 {
 }
 
 func (c *ConstantPool) GetConstantUtf8(index uint16) (*ConstantUtf8, error) {
-	var i int = int(index) - 1
+	i := int(index) - 1
 	if i < 0 || i > len(c.Constants) {
 		return nil, ErrNotFoundConstant
 	}
 	clazz, ok := c.Constants[i].(*ConstantUtf8)
 	if !ok {
-		return nil, fmt.Errorf("Unexpected constant. expected:ConstantUtf8, actual: %T", c.Constants[i])
+		return nil, fmt.Errorf("unexpected constant. expected:ConstantUtf8, actual: %T", c.Constants[i])
 	}
 	return clazz, nil
 }
 
 func (c *ConstantPool) GetClassInfo(index uint16) (*ConstantClass, error) {
-	var i int = int(index) - 1
+	i := int(index) - 1
 	if i < 0 || i > len(c.Constants) {
 		return nil, ErrNotFoundConstant
 	}
 	clazz, ok := c.Constants[i].(*ConstantClass)
 	if !ok {
-		return nil, fmt.Errorf("Unexpected constant. expected:ConstantClass, actual: %T", c.Constants[i])
+		return nil, fmt.Errorf("unexpected constant. expected:ConstantClass, actual: %T", c.Constants[i])
 	}
 	return clazz, nil
 }
 
 func (c *ConstantPool) GetClassName(classNameIndex uint16) (string, error) {
-	var i int = int(classNameIndex)
+	i := int(classNameIndex)
 	if i < 1 || i > len(c.Constants) {
 		return "", ErrNotFoundConstant
 	}
@@ -65,8 +65,7 @@ func (c *ConstantPool) GetClassName(classNameIndex uint16) (string, error) {
 	return name.String(), nil
 }
 
-type Constant interface {
-}
+type Constant interface{}
 
 type ConstantClass struct {
 	NameIndex uint16

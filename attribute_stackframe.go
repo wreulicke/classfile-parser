@@ -51,25 +51,30 @@ type StackMapFrameFullFrame struct {
 type VerificationTypeInfo interface{}
 
 var (
-	_verificationTypeInfoTopVaribleInfo               = &VerificationTypeInfoDoubleVaribleInfo{}
-	_verificationTypeInfoIntegerVaribleInfo           = &VerificationTypeInfoIntegerVaribleInfo{}
-	_verificationTypeInfoFloatVaribleInfo             = &VerificationTypeInfoIntegerVaribleInfo{}
-	_verificationTypeInfoNullVaribleInfo              = &VerificationTypeInfoNullVaribleInfo{}
-	_verificationTypeInfoUninitializedThisVaribleInfo = &VerificationTypeInfoUninitializedThisVaribleInfo{}
-	_verificationTypeInfoLongVaribleInfo              = &VerificationTypeInfoLongVaribleInfo{}
-	_verificationTypeInfoDoubleVaribleInfo            = &VerificationTypeInfoDoubleVaribleInfo{}
+	_verificationTypeInfoTopVaribleInfo               = &VerificationTypeInfoDoubleVaribleInfo{}            //nolint:gochecknoglobals
+	_verificationTypeInfoIntegerVaribleInfo           = &VerificationTypeInfoIntegerVaribleInfo{}           //nolint:gochecknoglobals
+	_verificationTypeInfoFloatVaribleInfo             = &VerificationTypeInfoIntegerVaribleInfo{}           //nolint:gochecknoglobals
+	_verificationTypeInfoNullVaribleInfo              = &VerificationTypeInfoNullVaribleInfo{}              //nolint:gochecknoglobals
+	_verificationTypeInfoUninitializedThisVaribleInfo = &VerificationTypeInfoUninitializedThisVaribleInfo{} //nolint:gochecknoglobals
+	_verificationTypeInfoLongVaribleInfo              = &VerificationTypeInfoLongVaribleInfo{}              //nolint:gochecknoglobals
+	_verificationTypeInfoDoubleVaribleInfo            = &VerificationTypeInfoDoubleVaribleInfo{}            //nolint:gochecknoglobals
 )
 
-type VerificationTypeInfoTopVaribleInfo struct{}
-type VerificationTypeInfoIntegerVaribleInfo struct{}
-type VerificationTypeInfoFloatVaribleInfo struct{}
-type VerificationTypeInfoNullVaribleInfo struct{}
-type VerificationTypeInfoUninitializedThisVaribleInfo struct{}
-type VerificationTypeInfoObjectVaribleInfo struct {
-	CpoolIndex uint16
-}
+type (
+	VerificationTypeInfoTopVaribleInfo               struct{}
+	VerificationTypeInfoIntegerVaribleInfo           struct{}
+	VerificationTypeInfoFloatVaribleInfo             struct{}
+	VerificationTypeInfoNullVaribleInfo              struct{}
+	VerificationTypeInfoUninitializedThisVaribleInfo struct{}
+	VerificationTypeInfoObjectVaribleInfo            struct {
+		CpoolIndex uint16
+	}
+)
+
 type VerificationTypeInfoUninitializedVaribleInfo struct {
 	Offset uint16
 }
-type VerificationTypeInfoLongVaribleInfo struct{}
-type VerificationTypeInfoDoubleVaribleInfo struct{}
+type (
+	VerificationTypeInfoLongVaribleInfo   struct{}
+	VerificationTypeInfoDoubleVaribleInfo struct{}
+)

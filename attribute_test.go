@@ -16,6 +16,7 @@ func findAttribute(attrs []Attribute, name string) Attribute {
 }
 
 func TestParseCode(t *testing.T) {
+	t.Parallel()
 	cf, err := parseFile("./testdata/classes/main/Test.class")
 	assert.NoError(t, err)
 

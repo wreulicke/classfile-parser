@@ -97,8 +97,9 @@ func (p *Parser) readConstantPool(c *Classfile) error {
 	for ; i < count-1; i++ {
 		tag, err := p.ReadUint8()
 		if err != nil {
-			return nil
+			return err
 		}
+		// See https://docs.oracle.com/javase/specs/jvms/se22/html/jvms-4.html#jvms-4.4-210
 		switch tag {
 		case 7:
 			c := &ConstantClass{}
@@ -263,9 +264,8 @@ func (p *Parser) readConstantPool(c *Classfile) error {
 				return err
 			}
 		default:
-			return fmt.Errorf("Unsupported tags for constant pool. tag:%d", tag)
+			return fmt.Errorf("unsupported tags for constant pool. tag:%d", tag)
 		}
-
 	}
 	return nil
 }
@@ -1053,7 +1053,7 @@ func readStackMapFrame(parser binary.Parser) (StackMapFrame, error) {
 		}
 		return f, nil
 	}
-	return nil, errors.New("Not supported frame type")
+	return nil, errors.New("not supported frame type")
 }
 
 func readVerificationType(parser binary.Parser) (VerificationTypeInfo, error) {
@@ -1061,6 +1061,7 @@ func readVerificationType(parser binary.Parser) (VerificationTypeInfo, error) {
 	if err != nil {
 		return nil, err
 	}
+	// See https://docs.oracle.com/javase/specs/jvms/se22/html/jvms-4.html#jvms-4.7.4
 	switch tag {
 	case 0:
 		return _verificationTypeInfoTopVaribleInfo, nil
@@ -1085,7 +1086,7 @@ func readVerificationType(parser binary.Parser) (VerificationTypeInfo, error) {
 	case 3:
 		return _verificationTypeInfoDoubleVaribleInfo, nil
 	}
-	return nil, errors.New("Unsupported verification type info")
+	return nil, errors.New("unsupported verification type info")
 }
 
 func readAnnotation(parser binary.Parser) (*Annotation, error) {
@@ -1144,12 +1145,14 @@ func readParameterAnnotation(parser binary.Parser) (*ParameterAnnotation, error)
 	return a, nil
 }
 
+// readTypeAnnotation reads a type annotation.
 func readTypeAnnotation(parser binary.Parser) (*TypeAnnotation, error) {
 	a := &TypeAnnotation{}
 	targetType, err := parser.ReadUint8()
 	if err != nil {
 		return nil, err
 	}
+	// See https://docs.oracle.com/javase/specs/jvms/se22/html/jvms-4.html#jvms-4.7.20-400
 	switch targetType {
 	case 0x00:
 		a.TargetInfo, err = readTypeParameterTarget(parser)
@@ -1196,7 +1199,7 @@ func readTypeAnnotation(parser binary.Parser) (*TypeAnnotation, error) {
 	case 0x4B:
 		a.TargetInfo, err = readTypeArgumentTarget(parser)
 	default:
-		return nil, fmt.Errorf("Unsupported target type for TypeAnnotation. tag: %d", targetType)
+		return nil, fmt.Errorf("unsupported target type for TypeAnnotation. tag: %d", targetType)
 	}
 	if err != nil {
 		return nil, err
@@ -1365,7 +1368,7 @@ func readElementValue(parser binary.Parser) (ElementValue, error) {
 	case '[':
 		return readElementArrayValue(parser)
 	default:
-		return nil, errors.New("Unsupported tag for element value")
+		return nil, errors.New("unsupported tag for element value")
 	}
 }
 
