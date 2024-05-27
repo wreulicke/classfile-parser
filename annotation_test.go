@@ -7,6 +7,7 @@ import (
 )
 
 func TestAnnotation(t *testing.T) {
+	t.Parallel()
 	cf, err := parseFile("./testdata/classes/main/Test.class")
 	assert.NoError(t, err)
 
