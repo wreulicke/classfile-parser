@@ -97,7 +97,7 @@ func (p *Parser) readConstantPool(c *Classfile) error {
 	for ; i < count-1; i++ {
 		tag, err := p.ReadUint8()
 		if err != nil {
-			return nil
+			return err
 		}
 		switch tag {
 		case 7:
@@ -1150,6 +1150,7 @@ func readTypeAnnotation(parser binary.Parser) (*TypeAnnotation, error) {
 	if err != nil {
 		return nil, err
 	}
+	// See https://docs.oracle.com/javase/specs/jvms/se22/html/jvms-4.html#jvms-4.7.20-400
 	switch targetType {
 	case 0x00:
 		a.TargetInfo, err = readTypeParameterTarget(parser)
