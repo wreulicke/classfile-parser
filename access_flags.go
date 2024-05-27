@@ -1,3 +1,4 @@
+//nolint:revive
 package parser
 
 type AccessFlags uint16
@@ -5,7 +6,7 @@ type AccessFlags uint16
 // See https://docs.oracle.com/javase/specs/jvms/se22/html/jvms-4.html#jvms-4.1-200-E.1 for classfile
 // See https://docs.oracle.com/javase/specs/jvms/se22/html/jvms-4.html#jvms-4.5-200-A.1 for field
 // See https://docs.oracle.com/javase/specs/jvms/se22/html/jvms-4.html#jvms-4.6-200-A.1 for method
-// See https://docs.oracle.com/javase/specs/jvms/se22/html/jvms-4.html#jvms-4.7.6-300-D.1-D.1 for inner class
+// See https://docs.oracle.com/javase/specs/jvms/se22/html/jvms-4.html#jvms-4.7.6-300-D.1-D.1 for inner class.
 const (
 	ACC_PUBLIC       AccessFlags = 0x0001
 	ACC_PRIVATE      AccessFlags = 0x0002

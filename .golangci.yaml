@@ -24,6 +24,7 @@ linters:
     - gocognit
     - gocyclo
     - maintidx
+    - stylecheck
     # deprecated linters
     - deadcode
     - interfacer
