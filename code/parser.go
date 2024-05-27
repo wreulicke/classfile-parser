@@ -273,7 +273,6 @@ func (p *codeParser) Parse() ([]*Instruction, error) {
 		}
 		instructions = append(instructions, inst)
 	}
-
 }
 
 func (p *codeParser) parseInstruction() (*Instruction, error) {
