@@ -271,7 +271,8 @@ func (p *Parser) readConstantPool(c *Classfile) error {
 }
 
 func (p *Parser) readAccessFlag(c *Classfile) (err error) {
-	c.AccessFlags, err = p.ReadUint16()
+	af, err := p.ReadUint16()
+	c.AccessFlags = AccessFlags(af)
 	return
 }
 
@@ -310,10 +311,11 @@ func (p *Parser) readFields(c *Classfile) error {
 	for ; i < count; i++ {
 		f := &Field{}
 		c.Fields = append(c.Fields, f)
-		f.AccessFlags, err = p.ReadUint16()
+		af, err := p.ReadUint16()
 		if err != nil {
 			return err
 		}
+		f.AccessFlags = AccessFlags(af)
 		f.NameIndex, err = p.ReadUint16()
 		if err != nil {
 			return err
@@ -339,10 +341,11 @@ func (p *Parser) readMethods(c *Classfile) error {
 	for ; i < count; i++ {
 		m := &Method{}
 		c.Methods = append(c.Methods, m)
-		m.AccessFlags, err = p.ReadUint16()
+		af, err := p.ReadUint16()
 		if err != nil {
 			return err
 		}
+		m.AccessFlags = AccessFlags(af)
 		m.NameIndex, err = p.ReadUint16()
 		if err != nil {
 			return err
@@ -501,10 +504,11 @@ func readAttribute(p binary.Parser, attributeLength uint32, attributeName string
 			if err != nil {
 				return nil, err
 			}
-			c.InnerClassAccessFlags, err = p.ReadUint16()
+			af, err := p.ReadUint16()
 			if err != nil {
 				return nil, err
 			}
+			c.InnerClassAccessFlags = AccessFlags(af)
 			a.InnerClasses = append(a.InnerClasses, c)
 		}
 		return a, nil

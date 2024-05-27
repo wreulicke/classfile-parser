@@ -117,7 +117,7 @@ type InnerClass struct {
 	InnerClassInfoIndex   uint16
 	OuterClassInfoIndex   uint16
 	InnerNameIndex        uint16
-	InnerClassAccessFlags uint16
+	InnerClassAccessFlags AccessFlags
 }
 
 type AttributeEnclosingMethod struct {
