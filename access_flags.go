@@ -28,3 +28,7 @@ const (
 	ACC_MANDATED     AccessFlags = 0x8000 // See https://docs.oracle.com/javase/specs/jvms/se22/html/jvms-4.html#jvms-4.7.24 in MethodParameters attribute
 	ACC_MODULE       AccessFlags = 0x8000
 )
+
+func (f AccessFlags) Is(i AccessFlags) bool {
+	return f&i != 0
+}
