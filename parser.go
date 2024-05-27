@@ -266,7 +266,6 @@ func (p *Parser) readConstantPool(c *Classfile) error {
 		default:
 			return fmt.Errorf("Unsupported tags for constant pool. tag:%d", tag)
 		}
-
 	}
 	return nil
 }
@@ -1062,6 +1061,7 @@ func readVerificationType(parser binary.Parser) (VerificationTypeInfo, error) {
 	if err != nil {
 		return nil, err
 	}
+	// See https://docs.oracle.com/javase/specs/jvms/se22/html/jvms-4.html#jvms-4.7.4
 	switch tag {
 	case 0:
 		return _verificationTypeInfoTopVaribleInfo, nil
@@ -1145,6 +1145,7 @@ func readParameterAnnotation(parser binary.Parser) (*ParameterAnnotation, error)
 	return a, nil
 }
 
+// readTypeAnnotation reads a type annotation.
 func readTypeAnnotation(parser binary.Parser) (*TypeAnnotation, error) {
 	a := &TypeAnnotation{}
 	targetType, err := parser.ReadUint8()
