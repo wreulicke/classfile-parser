@@ -32,7 +32,7 @@ func (c *ConstantPool) GetConstantUtf8(index uint16) (*ConstantUtf8, error) {
 	}
 	clazz, ok := c.Constants[i].(*ConstantUtf8)
 	if !ok {
-		return nil, fmt.Errorf("Unexpected constant. expected:ConstantUtf8, actual: %T", c.Constants[i])
+		return nil, fmt.Errorf("unexpected constant. expected:ConstantUtf8, actual: %T", c.Constants[i])
 	}
 	return clazz, nil
 }
@@ -44,7 +44,7 @@ func (c *ConstantPool) GetClassInfo(index uint16) (*ConstantClass, error) {
 	}
 	clazz, ok := c.Constants[i].(*ConstantClass)
 	if !ok {
-		return nil, fmt.Errorf("Unexpected constant. expected:ConstantClass, actual: %T", c.Constants[i])
+		return nil, fmt.Errorf("unexpected constant. expected:ConstantClass, actual: %T", c.Constants[i])
 	}
 	return clazz, nil
 }
@@ -65,8 +65,7 @@ func (c *ConstantPool) GetClassName(classNameIndex uint16) (string, error) {
 	return name.String(), nil
 }
 
-type Constant interface {
-}
+type Constant interface{}
 
 type ConstantClass struct {
 	NameIndex uint16
