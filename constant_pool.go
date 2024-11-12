@@ -65,10 +65,16 @@ func (c *ConstantPool) GetClassName(classNameIndex uint16) (string, error) {
 	return name.String(), nil
 }
 
-type Constant interface{}
+type Constant interface {
+	Name() string
+}
 
 type ConstantClass struct {
 	NameIndex uint16
+}
+
+func (c *ConstantClass) Name() string {
+	return "Class"
 }
 
 type ConstantFieldref struct {
@@ -76,9 +82,17 @@ type ConstantFieldref struct {
 	NameAndTypeIndex uint16
 }
 
+func (c *ConstantFieldref) Name() string {
+	return "Fieldref"
+}
+
 type ConstantMethodref struct {
 	ClassIndex       uint16
 	NameAndTypeIndex uint16
+}
+
+func (c *ConstantMethodref) Name() string {
+	return "Methodref"
 }
 
 type ConstantInterfaceMethodref struct {
@@ -86,16 +100,32 @@ type ConstantInterfaceMethodref struct {
 	NameAndTypeIndex uint16
 }
 
+func (c *ConstantInterfaceMethodref) Name() string {
+	return "InterfaceMethodref"
+}
+
 type ConstantString struct {
 	StringIndex uint16
+}
+
+func (c *ConstantString) Name() string {
+	return "String"
 }
 
 type ConstantInteger struct {
 	Bytes uint32
 }
 
+func (c *ConstantInteger) Name() string {
+	return "Integer"
+}
+
 type ConstantFloat struct {
 	Bytes uint32
+}
+
+func (c *ConstantFloat) Name() string {
+	return "Float"
 }
 
 type ConstantLong struct {
@@ -103,9 +133,17 @@ type ConstantLong struct {
 	LowBytes  uint32
 }
 
+func (c *ConstantLong) Name() string {
+	return "Long"
+}
+
 type ConstantDouble struct {
 	HighBytes uint32
 	LowBytes  uint32
+}
+
+func (c *ConstantDouble) Name() string {
+	return "Double"
 }
 
 type ConstantNameAndType struct {
@@ -113,9 +151,17 @@ type ConstantNameAndType struct {
 	DescriptorIndex uint16
 }
 
+func (c *ConstantNameAndType) Name() string {
+	return "NameAndType"
+}
+
 type ConstantUtf8 struct {
 	Length uint16
 	Bytes  []byte
+}
+
+func (c *ConstantUtf8) Name() string {
+	return "Utf8"
 }
 
 func (c *ConstantUtf8) String() string {
@@ -127,8 +173,16 @@ type ConstantMethodHandle struct {
 	ReferenceIndex uint16
 }
 
+func (c *ConstantMethodHandle) Name() string {
+	return "MethodHandle"
+}
+
 type ConstantMethodType struct {
 	DescriptorIndex uint16
+}
+
+func (c *ConstantMethodType) Name() string {
+	return "MethodType"
 }
 
 type ConstantDynamic struct {
@@ -136,15 +190,31 @@ type ConstantDynamic struct {
 	NameAndTypeIndex         uint16
 }
 
+func (c *ConstantDynamic) Name() string {
+	return "Dynamic"
+}
+
 type ConstantInvokeDynamic struct {
 	BootstrapMethodAttrIndex uint16
 	NameAndTypeIndex         uint16
+}
+
+func (c *ConstantInvokeDynamic) Name() string {
+	return "InvokeDynamic"
 }
 
 type ConstantModule struct {
 	NameIndex uint16
 }
 
+func (c *ConstantModule) Name() string {
+	return "Module"
+}
+
 type ConstantPackage struct {
 	NameIndex uint16
+}
+
+func (c *ConstantPackage) Name() string {
+	return "Package"
 }

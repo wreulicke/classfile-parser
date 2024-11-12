@@ -4,7 +4,7 @@ type Classfile struct {
 	MajorVersion uint16
 	MinorVersion uint16
 	ConstantPool *ConstantPool
-	AccessFlags  uint16
+	AccessFlags  AccessFlags
 	ThisClass    uint16
 	SuperClass   uint16
 	Interfaces   []uint16

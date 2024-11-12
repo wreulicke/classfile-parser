@@ -1,7 +1,7 @@
 package parser
 
 type Method struct {
-	AccessFlags     uint16
+	AccessFlags     AccessFlags
 	NameIndex       uint16
 	DescriptorIndex uint16
 	Attributes      []Attribute
