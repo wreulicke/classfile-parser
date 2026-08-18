@@ -923,20 +923,37 @@ func readAttribute(p binary.Parser, attributeLength uint32, attributeName string
 		a.TargetIndex, err = p.ReadUint16()
 		return a, err
 	case "ModuleHashes":
-		a := &AttributeModuleHash{}
+		a := &AttributeModuleHashes{}
 		a.HashAlgorithmIndex, err = p.ReadUint16()
 		if err != nil {
 			return nil, err
 		}
-		hashLength, err := p.ReadUint16()
+		hashesCount, err := p.ReadUint16()
 		if err != nil {
 			return nil, err
 		}
-		a.Hash, err = p.ReadBytes(int(hashLength))
-		if err != nil {
-			return nil, err
+		var i uint16
+		for ; i < hashesCount; i++ {
+			h := &ModuleHash{}
+			h.ModuleIndex, err = p.ReadUint16()
+			if err != nil {
+				return nil, err
+			}
+			hashLength, err := p.ReadUint16()
+			if err != nil {
+				return nil, err
+			}
+			h.Hash, err = p.ReadBytes(int(hashLength))
+			if err != nil {
+				return nil, err
+			}
+			a.Hashes = append(a.Hashes, h)
 		}
 		return a, nil
+	case "ModuleResolution":
+		a := &AttributeModuleResolution{}
+		a.Flag, err = p.ReadUint16()
+		return a, err
 	case "NestHost":
 		a := &AttributeNestHost{}
 		a.HostClassIndex, err = p.ReadUint16()

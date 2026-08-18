@@ -62,11 +62,24 @@ func (a *AttributeModuleTarget) Name() string {
 	return "ModuleTarget"
 }
 
-type AttributeModuleHash struct {
+type AttributeModuleHashes struct {
 	HashAlgorithmIndex uint16 // refers to a CONSTANT_Utf8_info structure in the constant pool
-	Hash               []byte // the hash value of the module's content, computed using the specified hash algorithm
+	Hashes             []*ModuleHash
 }
 
-func (a *AttributeModuleHash) Name() string {
-	return "ModuleHash"
+type ModuleHash struct {
+	ModuleIndex uint16 // refers to a CONSTANT_Module_info structure in the constant pool
+	Hash        []byte // the actual hash value
+}
+
+func (a *AttributeModuleHashes) Name() string {
+	return "ModuleHashes"
+}
+
+type AttributeModuleResolution struct {
+	Flag uint16
+}
+
+func (a *AttributeModuleResolution) Name() string {
+	return "ModuleResolution"
 }
