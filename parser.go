@@ -829,6 +829,7 @@ func readAttribute(p binary.Parser, attributeLength uint32, attributeName string
 				}
 				e.ExportsTo = append(e.ExportsTo, t)
 			}
+			a.Exports = append(a.Exports, e)
 		}
 
 		opensCount, err := p.ReadUint16()
@@ -857,6 +858,7 @@ func readAttribute(p binary.Parser, attributeLength uint32, attributeName string
 				}
 				e.OpensTo = append(e.OpensTo, t)
 			}
+			a.Opens = append(a.Opens, e)
 		}
 
 		usesCount, err := p.ReadUint16()
@@ -893,6 +895,7 @@ func readAttribute(p binary.Parser, attributeLength uint32, attributeName string
 				}
 				e.ProvidesWith = append(e.ProvidesWith, t)
 			}
+			a.Provides = append(a.Provides, e)
 		}
 
 		return a, nil
